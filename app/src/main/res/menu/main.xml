@@ -1,0 +1,54 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.navigationdrawerexample.MainActivity" >
+
+    <item
+        android:id="@+id/action_tutorial"
+        android:title="@string/tutorial"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never"/>
+    
+    <item
+        android:id="@+id/stopService"
+        android:orderInCategory="200"
+        android:title="@string/stop_service"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/deleteAllFilters"
+        android:orderInCategory="200"
+        android:title="@string/deleteAllFilters"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/setUpdateFrequency"
+        android:orderInCategory="200"
+        android:title="@string/setUpdateFrequency"
+        app:showAsAction="never"/>
+
+
+    <!--<item-->
+        <!--android:id="@+id/addFilter"-->
+        <!--android:orderInCategory="200"-->
+        <!--android:title="@string/add_filter"-->
+        <!--app:showAsAction="never"/>-->
+    <!---->
+    <!--<item-->
+        <!--android:id="@+id/showFiltered"-->
+        <!--android:orderInCategory="200"-->
+        <!--android:title="@string/show_filtered"-->
+        <!--app:showAsAction="never"/>-->
+    <!---->
+    <!--<item-->
+        <!--android:id="@+id/showAll"-->
+        <!--android:orderInCategory="200"-->
+        <!--android:title="@string/show_all"-->
+        <!--app:showAsAction="never"/>-->
+
+</menu>

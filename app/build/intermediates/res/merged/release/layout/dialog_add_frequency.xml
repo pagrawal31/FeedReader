@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="vertical" android:padding="@dimen/padding_15_15_20_25" android:layout_width="fill_parent" android:layout_height="wrap_content">
+
+        <TextView android:textSize="@dimen/window" android:textStyle="bold" android:textColor="@color/title"
+            android:id="@id/title" android:background="@drawable/dialog_title_background_rounded"
+            android:paddingLeft="@dimen/padding_15_15_20_25" android:paddingTop="@dimen/padding_10_10_15_20" android:paddingRight="@dimen/padding_15_15_20_25" android:paddingBottom="@dimen/padding_10_10_15_20"
+            android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/dialog_update_frequency" />
+
+        <RelativeLayout android:background="@drawable/dialog_background_rounded" android:padding="@dimen/padding_15_15_20_25" android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <TextView android:id="@+id/text1" android:textSize="@dimen/text" android:textStyle="normal" android:textColor="@color/text"
+                android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/dialog_filter_name" />
+
+            <Space android:id="@+id/space1" android:layout_width="fill_parent"
+                android:layout_height="@dimen/space_5_5_5_10" android:layout_below="@id/text1" />
+
+            <EditText android:id="@+id/freqValue" android:textStyle="normal" android:textColor="@color/edittext_text"
+                android:hint="@string/enter_freq_value" android:background="@drawable/edit_text"
+                android:paddingLeft="@dimen/editTextPaddingLeft" android:paddingTop="@dimen/editTextPaddingTop" android:paddingRight="@dimen/editTextPaddingRight" android:paddingBottom="@dimen/editTextPaddingBottom"
+                android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="@dimen/text"
+                android:minHeight="@dimen/editTextMinHeight" android:singleLine="true" android:layout_below="@id/space1" android:inputType="numberSigned" />
+
+            <Space android:id="@+id/space2" android:layout_width="fill_parent"
+                android:layout_height="@dimen/space_10_10_10_15" android:layout_below="@id/name" />
+
+            <!--<TextView android:textSize="@dimen/text" android:textStyle="normal" android:textColor="@color/text" android:id="@+id/text3" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/dialog_feed_url" android:layout_below="@id/space4" />
+            <Space android:id="@+id/space5" android:layout_width="fill_parent" android:layout_height="@dimen/space_5_5_5_10" android:layout_below="@id/text3" />
+            <EditText android:textSize="@dimen/text" android:textStyle="normal" android:textColor="@color/edittext_text" android:id="@+id/url" android:background="@drawable/edit_text" android:paddingLeft="@dimen/editTextPaddingLeft" android:paddingTop="@dimen/editTextPaddingTop" android:paddingRight="@dimen/editTextPaddingRight" android:paddingBottom="@dimen/editTextPaddingBottom" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="@dimen/editTextMinHeight" android:hint="@string/enter_url" android:singleLine="true" android:layout_below="@id/space5" android:inputType="textUri" />
+            <Space android:id="@+id/space6" android:layout_width="fill_parent" android:layout_height="@dimen/space_15_15_20_25" android:layout_below="@id/url" />
+            -->
+            <!--<LinearLayout android:orientation="vertical" android:id="@+id/buttonsContainer" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_below="@id/space6">
+                <include layout="@layout/section_buttons_ok_cancel" />
+            </LinearLayout>
+            <Space android:layout_width="fill_parent" android:layout_height="@dimen/space_10_10_10_15" android:layout_below="@id/buttonsContainer" />-->
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>

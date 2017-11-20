@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:orientation="vertical" android:background="@drawable/header_background_rounded" android:padding="@dimen/padding_5_5_8_10" android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView android:id="@+id/image" android:layout_width="@dimen/image_25_25_40_45" android:layout_height="@dimen/image_25_25_40_45" android:contentDescription="@string/image" />
+
+    <Space android:id="@+id/rightSpace" android:layout_width="@dimen/padding_5_5_8_10" android:layout_height="wrap_content" android:layout_toRightOf="@id/image" />
+
+    <TextView android:textSize="@dimen/text"
+        android:textColor="@color/title" android:id="@+id/title"
+        android:layout_width="fill_parent" android:layout_height="wrap_content"
+        android:text="@string/title" android:layout_toRightOf="@id/rightSpace" />
+
+    <TextView android:textSize="@dimen/mini"
+        android:textColor="@color/grey_light"
+        android:id="@+id/description" android:layout_width="fill_parent" android:layout_height="wrap_content"
+        android:text="@string/summary" android:layout_toRightOf="@id/rightSpace" android:layout_below="@id/title" />
+
+    <Space android:id="@+id/space" android:layout_width="fill_parent" android:layout_height="@dimen/space_15_15_20_25" android:layout_toRightOf="@id/rightSpace" android:layout_below="@id/description" />
+
+    <TextView android:textSize="@dimen/mini" android:textColor="@color/grey_light"
+        android:gravity="right" android:id="@+id/date" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/summary" android:layout_toRightOf="@id/rightSpace" android:layout_below="@id/space" />
+</RelativeLayout>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="menu">
+        <item>Delete</item>
+        <item>Exclude</item>
+        <item>Mark Favorite</item>
+    </string-array>
+
+    <string-array name="menu_navigation_drawer">
+        <item>Delete</item>
+        <item>Edit</item>
+        <item>Manage Filters</item>
+    </string-array>
+
+    <string-array name="menu_filters">
+        <item>Delete</item>
+        <item>Edit</item>
+    </string-array>
+
+
+</resources>

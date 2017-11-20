@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dev_email_id">care.pstechnology@gmail.com</string>
+    <string name="tutorial">Tutorial</string>
+    <string name="filterType">Type of Filter</string>
+</resources>
