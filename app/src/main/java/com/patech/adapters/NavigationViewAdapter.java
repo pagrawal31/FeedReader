@@ -47,7 +47,6 @@ public class NavigationViewAdapter extends BaseAdapter {
         updateList();
     }
 
-
     private void updateFromDatabase() {
         Cursor feedCursor = fetchFeedFromDatabase();
 
@@ -56,7 +55,7 @@ public class NavigationViewAdapter extends BaseAdapter {
             String desc = feedCursor.getString(feedCursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_DESC));
             String title = feedCursor.getString(feedCursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_TITLE));
             String url = feedCursor.getString(feedCursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_URL));
-            Feed newFeed = new Feed.FeedBuilder(url).setTitle(title).setDescription(desc).build();
+            Feed newFeed = new Feed.FeedBuilder().setTitle(title).setDescription(desc).build(url);
 
             FeedInfoStore.getInstance().addFeedIntoList(newFeed);
 
@@ -144,18 +143,16 @@ public class NavigationViewAdapter extends BaseAdapter {
             row = convertView;
         }
         TextView titleView = (TextView) row.findViewById(R.id.title);
-        TextView summartView = (TextView) row.findViewById(R.id.summary);
+        TextView lastUpdatedValue = (TextView) row.findViewById(R.id.lastUpdatedVal);
+
         String title = menus.get(position).getTitle();
         String summary = menus.get(position).getDescription();
         if (title == null || title.isEmpty()) {
             title = "Menu:" + position;
         }
-        if (summary == null || summary.isEmpty()) {
-            summary = "EMPTY-Summary";
-        }
 
         titleView.setText(title);
-        summartView.setText(summary);
+//        summartView.setText(summary);
         return row;
     }
 }

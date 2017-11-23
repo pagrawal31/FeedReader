@@ -126,4 +126,10 @@
     <string name="setUpdateFrequency">Set Update Frequency</string>
     <string name="title_activity_feed_search">FeedSearchActivity</string>
 
+    <string name="subscribe_keywords_url">Keywords or Url</string>
+    <string name="txt_search">Search</string>
+    <string name="search_feed">Search Feeds</string>
+    <string name="lastUpdated">Last Updated</string>
+    <string name="last_updated_value">Not Available</string>
+
 </resources>

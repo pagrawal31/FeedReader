@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="activity_horizontal_margin">64dp</dimen>
-    <string name="dev_email_id">care.pstechnology@gmail.com</string>
-    <string name="filterType">Type of Filter</string>
-    <string name="tutorial">Tutorial</string>
-</resources>

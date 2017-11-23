@@ -35,8 +35,8 @@ public class Feed {
         private String copyright;
         private String pubDate;
 
-        public FeedBuilder(String url) {
-            this.url = url;
+        public FeedBuilder() {
+            this.url = CommonUtils.EMPTY;
             this.name = CommonUtils.EMPTY;
             this.title = CommonUtils.EMPTY;
             this.description = CommonUtils.EMPTY;
@@ -72,7 +72,8 @@ public class Feed {
             this.copyright = copyright;
             return this;
         }
-        public Feed build() {
+        public Feed build(String url) {
+            this.url = url;
             Feed newFeed = new Feed(this.title, this.url, this.description, this.language, this.copyright,
                     this.pubDate);
             return newFeed;

@@ -47,4 +47,45 @@
 
     <style name="AppTheme.NoActionBar.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="ListRow">
+        <item name="android:background">@drawable/list_bg_item_selector_default</item>
+        <item name="android:paddingLeft">5.0dip</item>
+        <item name="android:paddingTop">5.0dip</item>
+        <item name="android:paddingRight">5.0dip</item>
+        <item name="android:paddingBottom">5.0dip</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">52.0dip</item>
+    </style>
+
+    <style name="ListRow.Black" parent="@style/ListRow">
+        <item name="android:background">@drawable/list_bg_item_selector_black</item>
+    </style>
+
+    <!--<item name="listRow">@style/ListRow.Black</item>-->
+
+    <style name="ListRowTitle">
+        <item name="android:textSize">16.0sp</item>
+        <item name="android:textColor">#ff444444</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="ListView">
+        <item name="android:background">@color/tag_group_default</item>
+        <item name="android:fadingEdgeLength">0.0dip</item>
+        <item name="android:divider">#ffdddddd</item>
+        <item name="android:dividerHeight">@dimen/divider_height</item>
+        <item name="android:footerDividersEnabled">true</item>
+    </style>
+    <style name="ListView.Black" parent="@style/ListView">
+        <item name="android:background">@color/tag_group_black</item>
+        <item name="android:divider">#ff181818</item>
+    </style>
+
+    <!--<item name="listView">@style/ListView.Black</item>-->
+
+
+
 </resources>

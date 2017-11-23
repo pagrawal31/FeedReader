@@ -42,4 +42,7 @@
     <dimen name="title">15.0sp</dimen>
     <dimen name="space_4_4_4_4">4.0dip</dimen>
 
+    <dimen name="space_small">4.0dip</dimen>
+    <dimen name="divider_height">0.5dip</dimen>
+
 </resources>

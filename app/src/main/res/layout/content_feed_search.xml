@@ -8,4 +8,32 @@
     tools:context=".FeedSearchActivity"
     tools:showIn="@layout/activity_feed_search">
 
+    <LinearLayout android:orientation="horizontal"
+        android:id="@+id/search_bar" android:background="?colorPrimaryDark"
+        android:padding="@dimen/space_small" android:layout_width="fill_parent" android:layout_height="56.0dip">
+
+        <EditText android:textColor="@color/gray_lighter"
+            android:textColorHint="@color/gray_light"
+            android:id="@+id/query"
+            android:layout_width="wrap_content"
+            android:focusableInTouchMode="true"
+            android:layout_weight="2"
+            android:layout_height="match_parent" android:hint="@string/subscribe_keywords_url" />
+
+
+        <Button android:id="@+id/search_button"
+            android:layout_width="wrap_content" android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/txt_search" android:layout_toRightOf="@id/query" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/feed_list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/search_bar" />
+
+    <Space android:id="@+id/space" app:layout_constraintTop_toBottomOf="@id/feed_list"
+        android:layout_width="fill_parent" android:layout_height="@dimen/space_5_5_5_10" />
+
 </android.support.constraint.ConstraintLayout>

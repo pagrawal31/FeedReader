@@ -3,4 +3,6 @@
     <string name="dev_email_id">care.pstechnology@gmail.com</string>
     <string name="tutorial">Tutorial</string>
     <string name="filterType">Type of Filter</string>
+    <string name="lastUpdated">Last Updated</string>
+    <string name="last_updated_value">Not Available</string>
 </resources>

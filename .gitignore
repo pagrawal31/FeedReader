@@ -1,0 +1,13 @@
+.idea/
+.idea/*
+.gradle/
+.gradle/*
+build/
+build/*
+app/build/
+app/build/*
+*.iml
+*.apk
+gradle/wrapper/
+gradle/wrapper/*
+local.properties

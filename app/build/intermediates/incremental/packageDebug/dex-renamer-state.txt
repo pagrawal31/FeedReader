@@ -1,7 +1,0 @@
-#Sat Nov 18 18:28:35 IST 2017
-base.0=C\:\\Users\\pagrawal\\AndroidStudioProjects\\FeedReader\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10000\\instant-run_f17c8e7a5aea83dfa1a5de17465b725609b99672
-renamed.1=classes.dex
-renamed.0=classes2.dex
-file.1=C\:\\Users\\pagrawal\\AndroidStudioProjects\\FeedReader\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10000\\instant-run-bootstrap_93f653d0b91b54a55f7c6c9497267323db263e12\\classes.dex
-base.1=C\:\\Users\\pagrawal\\AndroidStudioProjects\\FeedReader\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10000\\instant-run-bootstrap_93f653d0b91b54a55f7c6c9497267323db263e12
-file.0=C\:\\Users\\pagrawal\\AndroidStudioProjects\\FeedReader\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10000\\instant-run_f17c8e7a5aea83dfa1a5de17465b725609b99672\\classes.dex

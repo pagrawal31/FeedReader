@@ -14,6 +14,7 @@ import com.java.rssfeed.filterimpl.ExcludeFeedFilter;
 import com.java.rssfeed.filterimpl.FeedFilter;
 import com.java.rssfeed.filterimpl.IncludeFeedFilter;
 import com.java.rssfeed.interfaces.IPageParser;
+import com.patech.utils.CommonMsgs;
 import com.patech.utils.CommonUtils;
 
 import android.database.Cursor;
@@ -195,6 +196,10 @@ public class MainActivity extends AppCompatActivity implements
             mDialog.setFrequencyInMillis(((FeedReaderApplication)getApplication()).getFrequencyInMillis());
             mDialog.show(getFragmentManager(), "Update Frequency");
             break;
+        case R.id.searchFeed:
+            Intent feedSearchIntent = new Intent(getApplicationContext(), FeedSearchActivity.class);
+            startActivity(feedSearchIntent);
+            break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -280,10 +285,10 @@ public class MainActivity extends AppCompatActivity implements
                 navViewAdapter.updateList();
 
                 if (newRowId > 0) {
-                    Toast.makeText(getApplicationContext(), "Feed added", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), CommonMsgs.FEED_ADDED, Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(getApplicationContext(), "Feed already exists", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), CommonMsgs.FEED_ALREADY_EXISTS, Toast.LENGTH_SHORT).show();
             }
         }
     }

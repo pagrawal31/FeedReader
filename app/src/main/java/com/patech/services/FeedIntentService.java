@@ -3,7 +3,6 @@ package com.patech.services;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.patech.dbhelper.DatabaseOpenHelper;
 import com.patech.feedreader.ActivityUtils;
 import com.patech.feedreader.FeedReaderApplication;
 import com.patech.feedreader.MainActivity;
@@ -27,11 +26,9 @@ import android.os.IBinder;
 public class FeedIntentService extends IntentService {
 
 	private Set<FeedMessage> notifiedSet;
-    private DatabaseOpenHelper mDbHelper;
 	public FeedIntentService() {
 		super(FeedIntentService.class.getName());
 		notifiedSet = new HashSet<>();
-//        mDbHelper = new DatabaseOpenHelper(getApplicationContext());
 	}
 
 	private static final int NOTIFICATION_ID = 1;

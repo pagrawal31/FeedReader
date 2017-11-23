@@ -103,4 +103,15 @@
     <color name="yellow">#ffd5d578</color>
     <color name="yellow_dark">#ff8e8e01</color>
     <color name="yellow_mid">#ff9a9a41</color>
+
+    <color name="item_normal_default">#ffffffff</color>
+    <color name="item_selected_default">#ffc4ddf7</color>
+    <color name="item_normal_black">#ff000000</color>
+    <color name="item_selected_black">#ff3d72a4</color>
+
+    <color name="gray_lighter">#ffeeeeee</color>
+    <color name="gray_light">#ffcccccc</color>
+    <color name="tag_group_default">#ffeeeeee</color>
+    <color name="tag_group_black">#ff000000</color>
+
 </resources>

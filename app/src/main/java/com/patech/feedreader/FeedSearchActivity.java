@@ -1,38 +1,50 @@
 package com.patech.feedreader;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.java.rssfeed.FeedInfoStore;
 import com.java.rssfeed.feed.Feed;
+import com.patech.adapters.FeedSearchDisplayAdapter;
+import com.patech.dbhelper.DatabaseUtils;
+import com.patech.utils.CommonMsgs;
+import com.patech.utils.CommonUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-public class FeedSearchActivity extends AppCompatActivity {
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
+public class FeedSearchActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     static List<String> tags = Arrays.asList("website", "description", "language", "title",
             "lastUpdated", "feedId", "iconUrl", "contentType");
 
-    private List<Feed> feeds;
-
+    private List<Feed> feeds = Collections.EMPTY_LIST;
+    private ListView listView;
+    private Button searchBtn;
+    private EditText queryText;
+    private FeedSearchDisplayAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,67 +52,141 @@ public class FeedSearchActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        queryText = (EditText)findViewById(R.id.query);
+        searchBtn = (Button)findViewById(R.id.search_button);
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchButtonClick(view);
+            }
+        });
+
+        listView = (ListView)findViewById(R.id.feed_list);
+        adapter = new FeedSearchDisplayAdapter(getApplicationContext(), feeds);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
+//        registerForContextMenu(listView);
     }
 
-    private class HttpGetTask extends AsyncTask<String, Void, String> {
+    private void searchButtonClick(View view) {
+
+        String urlText = queryText.getText().toString();
+        if (urlText != null && urlText.length() > 2 ) {
+            OkHttpHandler executor = new OkHttpHandler();
+            executor.execute(urlText);
+        } else {
+            Toast.makeText(getApplicationContext(), CommonMsgs.ENTER_VALID_TEXT_TO_SEARCH, Toast.LENGTH_SHORT).show();;
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+        Feed selectedFeed = feeds.get(position);
+        SQLiteDatabase readerDB = ((FeedReaderApplication)getApplication()).getReadableDatabase();
+        SQLiteDatabase writeDB  = ((FeedReaderApplication)getApplication()).getWritableDatabase();
+        Cursor feedCursor = DatabaseUtils.fetchFeedFromDatabase(readerDB, selectedFeed);
+        feedCursor.moveToNext();
+        if (feedCursor.getCount() > 0) {
+            Toast.makeText(getApplicationContext(), CommonMsgs.FEED_ALREADY_EXISTS, Toast.LENGTH_SHORT).show();
+        } else {
+            long newRowId = DatabaseUtils.insertFeedIntoDb(writeDB, selectedFeed);
+            FeedInfoStore.getInstance().addFeedIntoList(selectedFeed);
+            Toast.makeText(getApplicationContext(), CommonMsgs.FEED_ADDED, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private class OkHttpHandler extends AsyncTask<String, Void, String> {
 
         private static final String TAG = "HttpGet";
+        OkHttpClient client = new OkHttpClient();
 
         @Override
         protected String doInBackground(String... url) {
             String keyWord = url[0];
-            String prefix = "http://cloud.feedly.com/v3/search/feeds?n=20&q=";
+            String prefix = CommonUtils.FEEDLY_URL_PREFIX;
             System.setProperty("http.agent", "");
             String feedUrl = prefix.concat(keyWord);
             feeds = new ArrayList<>();
+            String errorCode = CommonUtils.EMPTY;
 
             try {
+                Request.Builder builder = new Request.Builder();
+                builder.url(feedUrl);
+                Request request = builder.build();
 
-                URL feedurl = new URL(feedUrl);
-                InputStream inputStream = feedurl.openStream();
-                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-                StringBuffer webpageBuffer = new StringBuffer();
-
-                String inputLine;
-                while ((inputLine = br.readLine()) != null) {
-                    webpageBuffer.append(inputLine);
-                }
-                br.close();
-                String webpage = webpageBuffer.toString();
+                Response response = client.newCall(request).execute();
+                String webpage = response.body().string();
                 JSONObject jsonObject = new JSONObject(webpage);
 
                 JSONArray array = jsonObject.getJSONArray("results");
                 int size = array.length();
-
+                feeds = new ArrayList<>();
                 for (int i =0; i < size; i++) {
                     JSONObject resultObject = (JSONObject) array.get(i);
-
-                    Feed.FeedBuilder builder = new Feed.FeedBuilder();
-
-                    for (String tag : tags) {
-                        if (resultObject.has(tag)) {
-                            Object tagValue = resultObject.get(tag);
-                        }
-                    }
+                    Feed newFeed = getFeedObject(resultObject);
+                    if (newFeed != null)
+                        feeds.add(newFeed);
                 }
                 return feedUrl;
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                errorCode = CommonMsgs.URL_NOT_VALID;
             } catch (IOException e) {
-                e.printStackTrace();
+                errorCode = CommonMsgs.IO_ERROR;
             } catch (JSONException e) {
-                e.printStackTrace();
-            } finally {
+                errorCode = CommonMsgs.PARSING_ERROR;
+            }
+            if (errorCode != CommonUtils.EMPTY) {
+                Toast.makeText(getApplicationContext(), errorCode, Toast.LENGTH_LONG).show();
             }
             return feedUrl;
         }
 
         @Override
         protected void onPostExecute(String url) {
-
+            adapter.updateList(feeds);
         }
     }
 
+    private Feed getFeedObject(JSONObject resultObject) throws JSONException {
+        String currUrl = CommonUtils.EMPTY;
+
+        Feed.FeedBuilder feedBuilder = new Feed.FeedBuilder();
+        for (String tag : tags) {
+            if (resultObject.has(tag)) {
+                Object tagValueObj = resultObject.get(tag);
+                System.out.println(tagValueObj);
+                if (tagValueObj instanceof String) {
+                    String tagValue = (String) tagValueObj;
+                    switch(tag) {
+                        case "website":
+                        case "language":
+                        case "contentType":
+                            break;
+                        case "description":
+                            feedBuilder.setDescription(tagValue);
+                            break;
+                        case "title":
+                            feedBuilder.setTitle(tagValue);
+                            break;
+                        case "feedId":
+                            currUrl = tagValue;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+        if (currUrl != CommonUtils.EMPTY) {
+            if (currUrl.startsWith(CommonUtils.FEED_PREFIX)) {
+                currUrl = currUrl.replaceFirst(CommonUtils.FEED_PREFIX, CommonUtils.EMPTY);
+            }
+            return feedBuilder.build(currUrl);
+        }
+        return null;
+    }
 
 
 }

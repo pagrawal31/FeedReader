@@ -32,6 +32,12 @@
         android:title="@string/setUpdateFrequency"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/searchFeed"
+        android:orderInCategory="200"
+        android:title="@string/search_feed"
+        app:showAsAction="never"/>
+
 
     <!--<item-->
         <!--android:id="@+id/addFilter"-->
