@@ -41,6 +41,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -89,6 +90,14 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
         initDB();
 
+        ImageView headerImageView = (ImageView) findViewById(R.id.imageView);
+        headerImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(mainIntent);
+            }
+        });
         infoStoreMap = new HashMap<>();
         mNavListView = (ListView) findViewById(R.id.nav_items_list);
         navViewAdapter = new NavigationViewAdapter(this);
@@ -100,9 +109,8 @@ public class MainActivity extends AppCompatActivity implements
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 DialogFragment mDialog = FeedDialog.newInstance();
-                mDialog.show(getFragmentManager(), "Add Feed pagrawal");
+                mDialog.show(getFragmentManager(), "Add Feed");
 
             }
         });
@@ -301,7 +309,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
-        Toast.makeText(getApplicationContext(), "Cancel Pressed", Toast.LENGTH_SHORT).show();
+
     }
 
     @Override

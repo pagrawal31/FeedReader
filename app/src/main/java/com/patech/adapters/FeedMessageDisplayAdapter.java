@@ -1,6 +1,7 @@
 package com.patech.adapters;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,8 @@ public class FeedMessageDisplayAdapter extends ArrayAdapter<FeedMessage> {
 
         // ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
         titleView.setText(values.get(position).getTitle());
-        msgView.setText(values.get(position).getDescription());
+        String desc = values.get(position).getDescription();
+        msgView.setText(Html.fromHtml(desc));
         dateView.setText(values.get(position).getDate());
 
         return rowView;

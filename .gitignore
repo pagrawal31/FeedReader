@@ -6,6 +6,9 @@ build/
 build/*
 app/build/
 app/build/*
+app/release/
+app/release/*
+app/build.gradle
 *.iml
 *.apk
 gradle/wrapper/
