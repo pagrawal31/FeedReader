@@ -75,7 +75,7 @@ public class FeedSearchActivity extends AppCompatActivity {
                 for (int i =0; i < size; i++) {
                     JSONObject resultObject = (JSONObject) array.get(i);
 
-                    Feed.FeedBuilder builder = new Feed.FeedBuilder();
+                    //Feed.FeedBuilder builder = new Feed.FeedBuilder();
 
                     for (String tag : tags) {
                         if (resultObject.has(tag)) {
