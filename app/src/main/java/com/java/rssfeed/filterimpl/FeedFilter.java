@@ -1,5 +1,6 @@
 package com.java.rssfeed.filterimpl;
 
+import com.java.rssfeed.feed.FeedMessage;
 import com.patech.utils.CommonUtils;
 import com.java.rssfeed.interfaces.IFeedFilter;
 
@@ -13,13 +14,15 @@ public abstract class FeedFilter implements IFeedFilter {
     private final String filterTxt;
     private final String name;
     private final String description;
+    private final boolean isGlobalFilter;
 
-    public FeedFilter(String filterTxt, String name, String description, boolean valueIfNull) {
+    public FeedFilter(String filterTxt, String name, String description, boolean valueIfNull, boolean isGlobalFilter) {
         if (filterTxt == null || filterTxt.isEmpty()) {
             this.filterTxt = CommonUtils.EMPTY;
         } else {
             this.filterTxt = filterTxt.toLowerCase();
         }
+        this.isGlobalFilter = isGlobalFilter;
         this.name = name;
         this.description = description;
         DEFAULT = valueIfNull;
@@ -40,10 +43,10 @@ public abstract class FeedFilter implements IFeedFilter {
         return name;
     }
 
-    public boolean filterIt(String msg) {
+    public boolean filterIt(FeedMessage msg) {
         if (msg == null || msg.isEmpty() || filterTxt == CommonUtils.EMPTY)
             return DEFAULT;
-        return _filterIt(msg.toLowerCase());
+        return _filterIt(msg);
     }
 
     @Override
@@ -59,6 +62,9 @@ public abstract class FeedFilter implements IFeedFilter {
         return ((otherFilter.getFilterText().equals(this.filterTxt)) && (otherFilter.getFilterType() == getFilterType()));
     }
 
-    protected abstract boolean _filterIt(String msg);
+    protected abstract boolean _filterIt(FeedMessage msg);
 
+    public boolean isGlobalFilter() {
+        return isGlobalFilter;
+    }
 }

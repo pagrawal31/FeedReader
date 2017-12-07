@@ -29,7 +29,7 @@ public class AbstractPageParser {
             boolean currResult = filterIt(message, filter);
             Boolean soFarResult = filterResultMap.get(className);
             if (soFarResult != null) {
-                filterResultMap.put(className, Boolean.valueOf(filterResultMap.get(className) || currResult));
+                filterResultMap.put(className, filter.mergeResult(soFarResult, currResult));
             } else {
                 filterResultMap.put(className, currResult);
             }

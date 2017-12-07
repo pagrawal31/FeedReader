@@ -31,6 +31,11 @@ public class FiltersDisplayAdapter extends ArrayAdapter {
     }
 
     @Override
+    public int getCount() {
+        return filters.size();
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 

@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -24,10 +25,12 @@ import com.java.rssfeed.interfaces.IFeedFilter;
 import com.patech.adapters.FiltersDisplayAdapter;
 import com.patech.dbhelper.DatabaseUtils;
 import com.patech.dbhelper.FeedContract;
+import com.patech.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.patech.dbhelper.FeedContract.*;
 /**
  * Created by pagrawal on 17-11-2017.
  */
@@ -71,23 +74,25 @@ public class FilterDisplayActivity extends AppCompatActivity implements AdapterV
 
             Cursor filterCursor = DatabaseUtils.fetchFiltersFromFilterDb(db, filterId);
             while(filterCursor.moveToNext()) {
-                String filterDesc = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FeedContract.FilterEntry.COLUMN_NAME_DESC));
-                String filterName = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FeedContract.FilterEntry.COLUMN_NAME_NAME));
-                String filterText = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FeedContract.FilterEntry.COLUMN_NAME_TEXT));
-                String filterType = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FeedContract.FilterEntry.COLUMN_NAME_TYPE));
+                String filterDesc = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_DESC));
+                String filterName = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_NAME));
+                String filterText = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_TEXT));
+                String filterType = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_TYPE));
+                boolean isGlobal = CommonUtils.getBooleanFromInt(filterCursor.getInt((filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_GLOBAL))));
+
                 IFeedFilter filter;
 
                 if (filterType.equals(IncludeFeedFilter.FILTERTYPE)) {
-                    filter = new IncludeFeedFilter(filterText, filterName, filterDesc);
+                    filter = new IncludeFeedFilter(filterText, filterName, filterDesc, isGlobal);
                 } else {
-                    filter = new ExcludeFeedFilter(filterText, filterName, filterDesc);
+                    filter = new ExcludeFeedFilter(filterText, filterName, filterDesc, isGlobal);
                 }
                 filters.add(filter);
             }
             filterCursor.close();
         }
 
-        ListAdapter adapter = new FiltersDisplayAdapter(getApplicationContext(), filters);
+        ArrayAdapter adapter = new FiltersDisplayAdapter(getApplicationContext(), filters);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
         registerForContextMenu(listView);
@@ -129,6 +134,9 @@ public class FilterDisplayActivity extends AppCompatActivity implements AdapterV
                 }
                 SQLiteDatabase db = ((FeedReaderApplication)getApplication()).getWritableDatabase();
                 DatabaseUtils.deleteFilterFromFeedFilterDb(db, currFilter, currFeed, isGlobal);
+
+                filters.remove(info.position);
+                ((ArrayAdapter)listView.getAdapter()).notifyDataSetChanged();
                 break;
             case 1:
                 // edit feed

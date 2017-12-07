@@ -15,6 +15,7 @@ public class FeedReaderApplication extends Application {
     private SQLiteDatabase mWriterFeedDB = null;
     private SQLiteDatabase mReaderFeedDB = null;
     private long frequencyInMillis = 30000;
+    private boolean updateOnWifiOnly = true;
 
     @Override
     public void onCreate() {
@@ -39,5 +40,11 @@ public class FeedReaderApplication extends Application {
         return mWriterFeedDB;
     }
 
+    public boolean isUpdateOnWifiOnly() {
+        return updateOnWifiOnly;
+    }
 
+    public void setUpdateOnWifiOnly(boolean updateOnWifiOnly) {
+        this.updateOnWifiOnly = updateOnWifiOnly;
+    }
 }

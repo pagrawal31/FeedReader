@@ -11,6 +11,13 @@ public class CommonUtils {
 
     public static final String[] EMPTY_SELECTION = new String[]{};
 
+    public static int getIntFromBoolean(boolean value) {
+        return value ? 1 : 0;
+    }
+
+    public static boolean getBooleanFromInt(int value) {
+        return value == 1 ? true : false;
+    }
 
 
 }

@@ -1,6 +1,7 @@
 package com.java.rssfeed;
 
 import com.java.rssfeed.feed.Feed;
+import com.java.rssfeed.filterimpl.FeedFilter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,22 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 public class FeedInfoStore {
-    private static String[][] feedInfo = {
-//        { "http://www.bseindia.com/data/xml/notices.xml", "buyback", "buy back", "buy-back" },
-//        { "http://feeds.feedburner.com/nseindia/boardmeet", "buyback", "buy back", "buy-back" },
-//        { "http://feeds.feedburner.com/nseindia/ann", "buyback", "buy back", "buy-back" },
-//        { "http://feeds.feedburner.com/nseindia/ca", "buyback", "buy back", "buy-back" },
-//        { "http://feeds.feedburner.com/nseindia/results", "buyback", "buy back", "buy-back" },
-//        { "https://capitalmind.in/tag/buyback/feed/", "buyback", "buy back", "buy-back" },
-//        { "http://www.sebi.gov.in/sebirss.xml", "buyback", "buy back", "buy-back" },
-//        { "http://www.moneycontrol.com/rss/latestnews.xml", "buyback", "buy back", "buy-back" },
-//        { "http://www.bseindia.com/corporates/ann.aspx?expandable=3", "buyback", "buy back", "buy-back"}
-        };
 
 	private static List<Feed> feedInfoList;
     private static Map<String, Integer> feedUrlToIndexMap;
     private static Map<Integer, Feed> indexToFeedMap;
     private int feedCounter = 0;
+    private static List<FeedFilter> globalFilters;
 
     // create wrapper method for request/release
     private static FeedInfoStore INSTANCE;
@@ -43,16 +34,11 @@ public class FeedInfoStore {
         feedUrlToIndexMap = new HashMap<>();
         feedInfoList = new ArrayList<>();
         indexToFeedMap = new HashMap<>();
+        globalFilters = new ArrayList<>();
+    }
 
-        for (String[] feedLinkInfo : feedInfo) {
-            List<String> subList = new ArrayList<>();
-            Feed newFeed = new Feed(null, feedLinkInfo[0], null, null, null, null);
-            feedUrlToIndexMap.put(newFeed.getLink(), feedCounter++);
-//            for (int filterIdx = 1; filterIdx < feedLinkInfo.length; filterIdx++) {
-//                subList.add(feedLinkInfo[filterIdx]);
-//            }
-            feedInfoList.add(newFeed);
-        }
+    public static List<FeedFilter> getGlobalFilters() {
+        return globalFilters;
     }
 
     public List<Feed> getFeedInfoList() {
@@ -103,5 +89,8 @@ public class FeedInfoStore {
     	return status;
     }
     public static Map<String, Integer> requestInFlight = new HashMap<>();
-    
+
+    public void cleanupFilter() {
+        globalFilters.clear();
+    }
 }

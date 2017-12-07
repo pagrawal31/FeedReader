@@ -17,19 +17,20 @@ public class FeedDatabaseOpenHelper extends SQLiteOpenHelper {
     Context context;
 
     final private static String CREATE_TABLE_FILTER =
-            "CREATE TABLE "+ FeedContract.FilterEntry.TABLE_NAME + " ( " +
-                    FeedContract.FilterEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    FeedContract.FilterEntry.COLUMN_NAME_NAME + " TEXT," +
-                    FeedContract.FilterEntry.COLUMN_NAME_TYPE + " INTEGER," +
-                    FeedContract.FilterEntry.COLUMN_NAME_TEXT + " TEXT," +
-                    FeedContract.FilterEntry.COLUMN_NAME_DESC + " TEXT)";
+            "CREATE TABLE "+ FilterEntry.TABLE_NAME + " ( " +
+                    FilterEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    FilterEntry.COLUMN_NAME_NAME + " TEXT," +
+                    FilterEntry.COLUMN_NAME_TYPE + " INTEGER," +
+                    FilterEntry.COLUMN_NAME_GLOBAL + " INTEGER, " +
+                    FilterEntry.COLUMN_NAME_TEXT + " TEXT," +
+                    FilterEntry.COLUMN_NAME_DESC + " TEXT)";
 
     final private static String CREATE_TABLE_FEED =
-            "CREATE TABLE "+ FeedContract.FeedEntry.TABLE_NAME + " ( " +
-                    FeedContract.FeedEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    FeedContract.FeedEntry.COLUMN_NAME_URL + " TEXT," +
-                    FeedContract.FeedEntry.COLUMN_NAME_TITLE + " TEXT," +
-                    FeedContract.FeedEntry.COLUMN_NAME_DESC + " TEXT)";
+            "CREATE TABLE "+ FeedEntry.TABLE_NAME + " ( " +
+                    FeedEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    FeedEntry.COLUMN_NAME_URL + " TEXT," +
+                    FeedEntry.COLUMN_NAME_TITLE + " TEXT," +
+                    FeedEntry.COLUMN_NAME_DESC + " TEXT)";
 
     final private static String CREATE_TABLE_FEED_FILTER = "CREATE TABLE " +
             FeedFilterEntry.TABLE_NAME + " ( " +

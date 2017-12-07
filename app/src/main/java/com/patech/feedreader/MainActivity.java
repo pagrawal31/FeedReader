@@ -197,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements
 			break;
         case R.id.deleteAllFilters:
             DatabaseUtils.clearFiltersDb(mWriterFeedDB);
+            FeedInfoStore.getInstance().cleanupFilter();
             ReadTest.removeAllFilter();
             break;
         case R.id.setUpdateFrequency:
@@ -246,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements
 
                 FeedDialog mDialog = FeedDialog.newInstance();
                 mDialog.setFeedToDisplay(feed);
-                mDialog.show(getFragmentManager(), "Add Feed pagrawal");
+                mDialog.show(getFragmentManager(), "Add Feed");
 
                 break;
             case 2:
@@ -271,6 +272,8 @@ public class MainActivity extends AppCompatActivity implements
         EditText nameText = (EditText) dialogView.findViewById(R.id.name);
         EditText summaryText = (EditText) dialogView.findViewById(R.id.filterText);
         EditText urlText = (EditText) dialogView.findViewById(R.id.url);
+        CheckBox includeGlobalFilter = dialogView.findViewById(R.id.includeGlobalFilterBox);
+
         String nameVal = "";
         String summaryVal = "";
         String urlVal = "";
@@ -280,6 +283,7 @@ public class MainActivity extends AppCompatActivity implements
             summaryVal = summaryText.getText().toString().trim();
         if (urlText != null)
             urlVal = urlText.getText().toString().trim();
+        boolean bIncludeGlobalFilter = includeGlobalFilter.isChecked();
 
         if (validInput(nameVal, summaryVal, urlVal)) {
             // Insert the new row, returning the primary key value of the new row
@@ -290,6 +294,19 @@ public class MainActivity extends AppCompatActivity implements
             if (cursor.getCount() == 0) {
                 long newRowId = DatabaseUtils.insertFeedIntoDb(mWriterFeedDB, newFeed);
                 FeedInfoStore.getInstance().addFeedIntoList(newFeed);
+
+                // adding global filters to list
+                // adding feed-filter entry into database
+                // take care of globalFilter cleanup in remove all filter case.
+                if (bIncludeGlobalFilter) {
+                    for (FeedFilter filter : FeedInfoStore.getInstance().getGlobalFilters()) {
+                        // adding global filters to list
+                        ReadTest.addFilterToFeed(newFeed, filter);
+
+                        // adding feed-filter entry into database
+                        DatabaseUtils.addFeedFilter(mWriterFeedDB, filter, newFeed);
+                    }
+                }
                 navViewAdapter.updateList();
 
                 if (newRowId > 0) {
@@ -334,10 +351,10 @@ public class MainActivity extends AppCompatActivity implements
         FeedFilter filter = null;
         String filterType = "";
         if (isInclude) {
-            filter = new IncludeFeedFilter(filterValue, nameVal, CommonUtils.EMPTY);
+            filter = new IncludeFeedFilter(filterValue, nameVal, CommonUtils.EMPTY, isGlobalFilter);
             filterType = STRING_INCLUDE;
         } else {
-            filter = new ExcludeFeedFilter(filterValue, nameVal, CommonUtils.EMPTY);
+            filter = new ExcludeFeedFilter(filterValue, nameVal, CommonUtils.EMPTY, isGlobalFilter);
             filterType = STRING_EXCLUDE;
         }
 

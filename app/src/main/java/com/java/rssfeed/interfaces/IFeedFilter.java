@@ -14,8 +14,9 @@ public interface IFeedFilter {
     public String getFilterName();
     public String getFilterDesc();
     public String getFilterType();
+    public boolean isGlobalFilter();
 
     public boolean filterIt(FeedMessage msg);
 
-    public boolean filterIt(String msg);
+    Boolean mergeResult(Boolean soFarResult, boolean currResult);
 }

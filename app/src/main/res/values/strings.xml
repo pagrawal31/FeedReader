@@ -131,5 +131,6 @@
     <string name="search_feed">Search Feeds</string>
     <string name="lastUpdated">Last Updated</string>
     <string name="last_updated_value">Not Available</string>
+    <string name="include_global_filter">Include Global Filters</string>
 
 </resources>

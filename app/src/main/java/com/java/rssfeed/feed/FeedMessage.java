@@ -2,13 +2,15 @@ package com.java.rssfeed.feed;
 
 import java.util.zip.CRC32;
 
+import static com.patech.utils.CommonUtils.EMPTY;
+
 public class FeedMessage {
-    private String title;
-    private String description;
-    private String link;
-    private String author;
-    private String guid;
-    private String date;
+    private String title = EMPTY;
+    private String description = EMPTY;
+    private String link = EMPTY;
+    private String author = EMPTY;
+    private String guid = EMPTY;
+    private String date = EMPTY;
     private int crc32 = -1;
     
     public String getTitle() {
@@ -16,7 +18,7 @@ public class FeedMessage {
     }
 
     public void setTitle(String title) {
-        this.title = title != null ? title : null;
+        this.title = title != null ? title : EMPTY;
     }
 
     public String getDescription() {
@@ -36,7 +38,7 @@ public class FeedMessage {
     }
 
     public void setAuthor(String author) {
-        this.author = author;
+        this.author = author != null ? author : EMPTY;
     }
 
     public String getLink() {
@@ -48,7 +50,7 @@ public class FeedMessage {
     }
 
     public void setDescription(String description) {
-        this.description = description != null ? description : description;
+        this.description = description != null ? description :  EMPTY;
     }
     
     @Override
@@ -93,6 +95,19 @@ public class FeedMessage {
     
     public String getDate() {
         return this.date;
+    }
+
+    public boolean isEmpty() {
+        if (this.title == EMPTY && this.description == EMPTY && this.author == EMPTY)
+            return true;
+        return false;
+    }
+
+    public boolean containsTxt(String msg) {
+        if (this.title.toLowerCase().contains(msg) ||
+                this.description.toLowerCase().contains(msg) || this.author.toLowerCase().contains(msg))
+            return true;
+        return false;
     }
 
 }

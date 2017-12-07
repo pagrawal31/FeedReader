@@ -16,6 +16,13 @@
             <Space android:id="@+id/space5" android:layout_width="fill_parent" android:layout_height="@dimen/space_5_5_5_10" android:layout_below="@id/text3" />
             <EditText android:textSize="@dimen/text" android:textStyle="normal" android:textColor="@color/edittext_text" android:id="@+id/url" android:background="@drawable/edit_text" android:paddingLeft="@dimen/editTextPaddingLeft" android:paddingTop="@dimen/editTextPaddingTop" android:paddingRight="@dimen/editTextPaddingRight" android:paddingBottom="@dimen/editTextPaddingBottom" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="@dimen/editTextMinHeight" android:hint="@string/enter_url" android:singleLine="true" android:layout_below="@id/space5" android:inputType="textUri" />
             <Space android:id="@+id/space6" android:layout_width="fill_parent" android:layout_height="@dimen/space_15_15_20_25" android:layout_below="@id/url" />
+            <CheckBox
+                android:id="@+id/includeGlobalFilterBox" android:layout_below="@id/space6"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:checked="true" android:text="@string/include_global_filter"
+                android:paddingBottom="@dimen/editTextPaddingBottom" android:paddingLeft="@dimen/editTextPaddingLeft" android:paddingRight="@dimen/editTextPaddingRight" android:paddingTop="@dimen/editTextPaddingTop"
+                android:textColor="@color/edittext_text" />
+
             <!--<LinearLayout android:orientation="vertical" android:id="@+id/buttonsContainer" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_below="@id/space6">
                 <include layout="@layout/section_buttons_ok_cancel" />
             </LinearLayout>

@@ -22,6 +22,7 @@ public class FeedContract {
         public final static String COLUMN_NAME_TYPE = "type";
         public final static String COLUMN_NAME_DESC = "desc";
         public final static String COLUMN_NAME_TEXT = "txt";
+        public final static String COLUMN_NAME_GLOBAL = "global";
     }
 
     public static class FeedFilterEntry implements BaseColumns {
@@ -46,6 +47,7 @@ public class FeedContract {
             FilterEntry.COLUMN_NAME_TYPE,
             FilterEntry.COLUMN_NAME_DESC,
             FilterEntry.COLUMN_NAME_TEXT,
+            FilterEntry.COLUMN_NAME_GLOBAL
     };
 
     public static final String[] feedFilterTableAllProjection = {

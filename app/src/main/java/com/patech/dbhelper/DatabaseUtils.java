@@ -99,6 +99,7 @@ public class DatabaseUtils {
         values.put(FilterEntry.COLUMN_NAME_DESC, filter.getFilterDesc());
         values.put(FilterEntry.COLUMN_NAME_TEXT, filter.getFilterText());
         values.put(FilterEntry.COLUMN_NAME_TYPE, filter.getFilterType());
+        values.put(FilterEntry.COLUMN_NAME_GLOBAL, CommonUtils.getIntFromBoolean(filter.isGlobalFilter()));
         return db.insert(FilterEntry.TABLE_NAME, null, values);
     }
 
@@ -155,6 +156,20 @@ public class DatabaseUtils {
         db.delete(FeedFilterEntry.TABLE_NAME, null, null);
     }
 
+    public static void addFeedFilter(SQLiteDatabase db, IFeedFilter filter, Feed feed) {
+        Cursor filterCursor = fetchFiltersFromFilterDb(db, filter);
+        boolean removeFilter = false;
+        while(filterCursor.moveToNext()) {
+            String filterStr = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry._ID));
+            long filterId = -1;
+            try {
+                filterId = Long.parseLong(filterStr);
+            } catch (NumberFormatException nfe) {
+                continue;
+            }
+            insertFilterFeedIntoDb(db, filterId, feed);
+        }
+    }
     public static long insertFilterFeedIntoDb(SQLiteDatabase db, long filterId, Feed feed) {
         ContentValues values = new ContentValues();
         values.put(FeedFilterEntry.COLUMN_NAME_FILTER_ID, filterId);
