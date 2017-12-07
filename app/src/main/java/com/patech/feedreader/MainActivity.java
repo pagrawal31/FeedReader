@@ -6,6 +6,7 @@ import com.patech.dbhelper.FeedDatabaseOpenHelper;
 import com.patech.dialog.AddFilterDialog;
 import com.patech.dialog.FeedDialog;
 import com.patech.dialog.UpdateFrequencyDialog;
+import com.patech.location.Connectivity;
 import com.patech.services.FeedIntentService;
 import com.java.rssfeed.FeedInfoStore;
 import com.java.rssfeed.ReadTest;
@@ -14,10 +15,12 @@ import com.java.rssfeed.filterimpl.ExcludeFeedFilter;
 import com.java.rssfeed.filterimpl.FeedFilter;
 import com.java.rssfeed.filterimpl.IncludeFeedFilter;
 import com.java.rssfeed.interfaces.IPageParser;
+import com.patech.utils.AppConstants;
 import com.patech.utils.CommonMsgs;
-import com.patech.utils.CommonUtils;
+import com.patech.utils.AppUtils;
 
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.app.Dialog;
@@ -81,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private ListView mNavListView;
     private NavigationViewAdapter navViewAdapter;
+    private SharedPreferences sharedPreferences;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +93,10 @@ public class MainActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         initDB();
+
+        sharedPreferences = ((FeedReaderApplication)getApplication()).getSharedPreferences();
+
+        firstTimeInit();
 
         ImageView headerImageView = (ImageView) findViewById(R.id.imageView);
         headerImageView.setOnClickListener(new View.OnClickListener() {
@@ -130,6 +138,27 @@ public class MainActivity extends AppCompatActivity implements
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 	}
+
+    private void firstTimeInit() {
+
+	    // Check if we need to display our OnboardingFragment
+        if (!sharedPreferences.getBoolean(
+                AppConstants.FIRST_TIME_LAUNCH, false)) {
+
+            boolean isMobile = Connectivity.isConnectedMobile(getApplicationContext());
+
+            SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+            sharedPreferencesEditor.putBoolean(AppConstants.FIRST_TIME_LAUNCH, true);
+            if (!isMobile) {
+                sharedPreferencesEditor.putBoolean(AppConstants.WIFI_ONLY, true);
+            }
+            getApp().setUpdateOnWifiOnly(!isMobile);
+            sharedPreferencesEditor.apply();
+        } else {
+            boolean isWifiOnly = sharedPreferences.getBoolean(AppConstants.WIFI_ONLY, false);
+            getApp().setUpdateOnWifiOnly(isWifiOnly);
+        }
+    }
 
     private void initDB() {
 //        // Get the underlying database for writing
@@ -351,10 +380,10 @@ public class MainActivity extends AppCompatActivity implements
         FeedFilter filter = null;
         String filterType = "";
         if (isInclude) {
-            filter = new IncludeFeedFilter(filterValue, nameVal, CommonUtils.EMPTY, isGlobalFilter);
+            filter = new IncludeFeedFilter(filterValue, nameVal, AppUtils.EMPTY, isGlobalFilter);
             filterType = STRING_INCLUDE;
         } else {
-            filter = new ExcludeFeedFilter(filterValue, nameVal, CommonUtils.EMPTY, isGlobalFilter);
+            filter = new ExcludeFeedFilter(filterValue, nameVal, AppUtils.EMPTY, isGlobalFilter);
             filterType = STRING_EXCLUDE;
         }
 
@@ -367,6 +396,7 @@ public class MainActivity extends AppCompatActivity implements
                     long value = DatabaseUtils.insertFilterFeedIntoDb(mWriterFeedDB, filterId, feed);
                     parser = ReadTest.getFeedParser(idx);
                     parser.addFilter(filter);
+                    FeedInfoStore.getInstance().addGlobalFilter(filter);
                 }
             } else {
                 parser = ReadTest.getFeedParser(currPosition);
@@ -424,5 +454,9 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onFrequencyUpdateNegativeClick(DialogFragment dialog) {
 
+    }
+
+    public FeedReaderApplication getApp() {
+        return (FeedReaderApplication)getApplication();
     }
 }

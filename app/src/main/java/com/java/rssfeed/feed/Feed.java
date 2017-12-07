@@ -1,6 +1,6 @@
 package com.java.rssfeed.feed;
 
-import com.patech.utils.CommonUtils;
+import com.patech.utils.AppUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,13 +36,13 @@ public class Feed {
         private String pubDate;
 
         public FeedBuilder() {
-            this.url = CommonUtils.EMPTY;
-            this.name = CommonUtils.EMPTY;
-            this.title = CommonUtils.EMPTY;
-            this.description = CommonUtils.EMPTY;
-            this.language = CommonUtils.EMPTY;
-            this.copyright = CommonUtils.EMPTY;
-            this.pubDate = CommonUtils.EMPTY;
+            this.url = AppUtils.EMPTY;
+            this.name = AppUtils.EMPTY;
+            this.title = AppUtils.EMPTY;
+            this.description = AppUtils.EMPTY;
+            this.language = AppUtils.EMPTY;
+            this.copyright = AppUtils.EMPTY;
+            this.pubDate = AppUtils.EMPTY;
         }
 
         public FeedBuilder setName(String name) {

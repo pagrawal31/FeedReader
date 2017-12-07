@@ -24,6 +24,7 @@ import com.java.rssfeed.feed.Feed;
 import com.java.rssfeed.FeedInfoStore;
 import com.java.rssfeed.feed.FeedMessage;
 import com.java.rssfeed.interfaces.IPageParser;
+import com.patech.utils.AppUtils;
 
 import android.os.AsyncTask;
 
@@ -133,7 +134,7 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
                                 catch (Exception e) {
                                     currDate = null;
                                 }
-                                if (compareDates(latestDate, currDate)) {
+                                if (AppUtils.compareDates(latestDate, currDate)) {
                                     // no need to check feeds further.
                                     return false;
                                 }
@@ -178,40 +179,11 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
         return true;
     }
 
-    private boolean compareDates(Date latestDate, Date currDate) {
-        if (latestDate == null || currDate == null)
-            return false;
-        if (latestDate.after(currDate))
-            return true;
-        return false;
-    }
-
     private String cleanupHtmlMarkup(String string) {
         String cleanString = string.replaceAll("&nbsp;", "");
         cleanString = cleanString.replaceAll("&amp;nbsp", "");
         return cleanString;
     }
-
-//    public static void main(String[] args) {
-//        PageScrapBse bsePage = new PageScrapBse("http://www.bseindia.com/corporates/ann.aspx?expandable=3");
-//        bsePage.addFilterString("buyback");
-//        bsePage.addFilterString("buy back");
-//        
-//        String url = bsePage.feedUrl;
-//        
-//        while (true) {
-//            while (url != null && !url.isEmpty()) {
-//                if (!url.startsWith("http")) {
-//                    url = "http://www.bseindia.com/corporates/" + url;
-//                }
-//                String buffer = extractWebpage(url);
-//                if (buffer != null && !buffer.isEmpty())
-//                    url = bsePage.scrapPageContent(buffer);
-//                else
-//                    System.out.println("Buffer is empty");
-//            }
-//        }
-//    }
     
 	public static String extractWebpage(String url)
 			throws MalformedURLException, IOException {

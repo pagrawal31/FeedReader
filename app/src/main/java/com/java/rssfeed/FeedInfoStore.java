@@ -41,6 +41,10 @@ public class FeedInfoStore {
         return globalFilters;
     }
 
+    public static void addGlobalFilter(FeedFilter filter) {
+        globalFilters.add(filter);
+    }
+
     public List<Feed> getFeedInfoList() {
         return feedInfoList;
     }

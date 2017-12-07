@@ -13,6 +13,7 @@ import com.java.rssfeed.FeedInfoStore;
 import com.java.rssfeed.feed.FeedMessage;
 import com.java.rssfeed.ReadTest;
 import com.java.rssfeed.interfaces.IPageParser;
+import com.patech.location.Connectivity;
 
 import android.annotation.SuppressLint;
 import android.app.IntentService;
@@ -63,25 +64,35 @@ public class FeedIntentService extends IntentService {
 		int size = FeedInfoStore.getInstance().getFeedInfoList().size();
 
 		while (true) {
-            for (int i = 0; i < size; i++) {
-                try {
-                	Feed newFeed = null;
-            		IPageParser parser = null;
-            		Feed feed = FeedInfoStore.getInstance().getFeedInfoList().get(i);
-            		try {
-            			parser = ReadTest.getFeedParser(feed);
-                        newFeed = parser.readFeed();
-            			for (FeedMessage msg : parser.getMessages()) {
-            				if (parser.filterFeedMessage(msg)) {
-            					showNotification(feed.getLink(), msg);
-            				}
-            			}
-            		} catch (Exception e) {
-            			System.out.println("Failed in getting the Info [" + e.getMessage()
-            					+ "]");
-            		}
-                } catch (Exception e) {
-                    System.out.println("Failed in getting the Info [" + e.getMessage() + "]");
+		    // if user is on Data but does not want update on WiFi only, then we should not update on Data
+            boolean isUpdateWifiOnly = ((FeedReaderApplication)getApplication()).isUpdateOnWifiOnly();
+            boolean isUpdate = false;
+            if (isUpdateWifiOnly) {
+                isUpdate = Connectivity.isConnectedWifi(getApplicationContext());
+            } else {
+                isUpdate = true;
+            }
+            if (isUpdate && Connectivity.isConnected(getApplicationContext())) {
+                for (int i = 0; i < size; i++) {
+                    try {
+                        Feed newFeed = null;
+                        IPageParser parser = null;
+                        Feed feed = FeedInfoStore.getInstance().getFeedInfoList().get(i);
+                        try {
+                            parser = ReadTest.getFeedParser(feed);
+                            newFeed = parser.readFeed();
+                            for (FeedMessage msg : parser.getMessages()) {
+                                if (parser.filterFeedMessage(msg)) {
+                                    showNotification(feed.getLink(), msg);
+                                }
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Failed in getting the Info [" + e.getMessage()
+                                    + "]");
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Failed in getting the Info [" + e.getMessage() + "]");
+                    }
                 }
             }
             try {

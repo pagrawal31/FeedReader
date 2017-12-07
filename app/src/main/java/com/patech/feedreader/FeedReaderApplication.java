@@ -1,7 +1,9 @@
 package com.patech.feedreader;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 
 import com.patech.dbhelper.FeedDatabaseOpenHelper;
 
@@ -16,10 +18,12 @@ public class FeedReaderApplication extends Application {
     private SQLiteDatabase mReaderFeedDB = null;
     private long frequencyInMillis = 30000;
     private boolean updateOnWifiOnly = true;
+    private SharedPreferences sharedPreferences;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mFeedDbHelper = new FeedDatabaseOpenHelper(this);
         mWriterFeedDB = mFeedDbHelper.getWritableDatabase();
         mReaderFeedDB = mFeedDbHelper.getReadableDatabase();
@@ -46,5 +50,9 @@ public class FeedReaderApplication extends Application {
 
     public void setUpdateOnWifiOnly(boolean updateOnWifiOnly) {
         this.updateOnWifiOnly = updateOnWifiOnly;
+    }
+
+    public SharedPreferences getSharedPreferences() {
+        return sharedPreferences;
     }
 }

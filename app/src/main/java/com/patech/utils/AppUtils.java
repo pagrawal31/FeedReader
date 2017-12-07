@@ -1,10 +1,12 @@
 package com.patech.utils;
 
+import java.util.Date;
+
 /**
  * Created by pagrawal on 11-11-2017.
  */
 
-public class CommonUtils {
+public class AppUtils {
     public static final String EMPTY = "";
     public static final String FEED_PREFIX = "feed/";
     public static final String FEEDLY_URL_PREFIX = "http://cloud.feedly.com/v3/search/feeds?n=20&q=";
@@ -19,5 +21,12 @@ public class CommonUtils {
         return value == 1 ? true : false;
     }
 
+    public static boolean compareDates(Date latestDate, Date currDate) {
+        if (latestDate == null || currDate == null)
+            return false;
+        if (latestDate.after(currDate))
+            return true;
+        return false;
+    }
 
 }

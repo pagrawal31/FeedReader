@@ -18,7 +18,7 @@ import com.java.rssfeed.feed.Feed;
 import com.patech.adapters.FeedSearchDisplayAdapter;
 import com.patech.dbhelper.DatabaseUtils;
 import com.patech.utils.CommonMsgs;
-import com.patech.utils.CommonUtils;
+import com.patech.utils.AppUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -105,11 +105,11 @@ public class FeedSearchActivity extends AppCompatActivity implements AdapterView
         @Override
         protected String doInBackground(String... url) {
             String keyWord = url[0];
-            String prefix = CommonUtils.FEEDLY_URL_PREFIX;
+            String prefix = AppUtils.FEEDLY_URL_PREFIX;
             System.setProperty("http.agent", "");
             String feedUrl = prefix.concat(keyWord);
             feeds = new ArrayList<>();
-            String errorCode = CommonUtils.EMPTY;
+            String errorCode = AppUtils.EMPTY;
 
             try {
                 Request.Builder builder = new Request.Builder();
@@ -137,7 +137,7 @@ public class FeedSearchActivity extends AppCompatActivity implements AdapterView
             } catch (JSONException e) {
                 errorCode = CommonMsgs.PARSING_ERROR;
             }
-            if (errorCode != CommonUtils.EMPTY) {
+            if (errorCode != AppUtils.EMPTY) {
                 Toast.makeText(getApplicationContext(), errorCode, Toast.LENGTH_LONG).show();
             }
             return feedUrl;
@@ -150,7 +150,7 @@ public class FeedSearchActivity extends AppCompatActivity implements AdapterView
     }
 
     private Feed getFeedObject(JSONObject resultObject) throws JSONException {
-        String currUrl = CommonUtils.EMPTY;
+        String currUrl = AppUtils.EMPTY;
 
         Feed.FeedBuilder feedBuilder = new Feed.FeedBuilder();
         for (String tag : tags) {
@@ -179,9 +179,9 @@ public class FeedSearchActivity extends AppCompatActivity implements AdapterView
                 }
             }
         }
-        if (currUrl != CommonUtils.EMPTY) {
-            if (currUrl.startsWith(CommonUtils.FEED_PREFIX)) {
-                currUrl = currUrl.replaceFirst(CommonUtils.FEED_PREFIX, CommonUtils.EMPTY);
+        if (currUrl != AppUtils.EMPTY) {
+            if (currUrl.startsWith(AppUtils.FEED_PREFIX)) {
+                currUrl = currUrl.replaceFirst(AppUtils.FEED_PREFIX, AppUtils.EMPTY);
             }
             return feedBuilder.build(currUrl);
         }

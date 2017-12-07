@@ -1,7 +1,7 @@
 package com.java.rssfeed.filterimpl;
 
 import com.java.rssfeed.feed.FeedMessage;
-import com.patech.utils.CommonUtils;
+import com.patech.utils.AppUtils;
 import com.java.rssfeed.interfaces.IFeedFilter;
 
 /**
@@ -18,7 +18,7 @@ public abstract class FeedFilter implements IFeedFilter {
 
     public FeedFilter(String filterTxt, String name, String description, boolean valueIfNull, boolean isGlobalFilter) {
         if (filterTxt == null || filterTxt.isEmpty()) {
-            this.filterTxt = CommonUtils.EMPTY;
+            this.filterTxt = AppUtils.EMPTY;
         } else {
             this.filterTxt = filterTxt.toLowerCase();
         }
@@ -44,7 +44,7 @@ public abstract class FeedFilter implements IFeedFilter {
     }
 
     public boolean filterIt(FeedMessage msg) {
-        if (msg == null || msg.isEmpty() || filterTxt == CommonUtils.EMPTY)
+        if (msg == null || msg.isEmpty() || filterTxt == AppUtils.EMPTY)
             return DEFAULT;
         return _filterIt(msg);
     }

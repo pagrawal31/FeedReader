@@ -5,6 +5,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Set;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -15,6 +18,7 @@ import com.java.rssfeed.feed.Feed;
 import com.java.rssfeed.FeedInfoStore;
 import com.java.rssfeed.feed.FeedMessage;
 import com.java.rssfeed.interfaces.IPageParser;
+import com.patech.utils.AppUtils;
 
 import android.os.AsyncTask;
 
@@ -31,6 +35,12 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
     static final String GUID = "guid";
     String currentPageData = null;
     Feed feedInfo = null;
+
+    private static final DateFormat DATE_FORMATTER = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+
+    private Date currAtmostDate = null;
+    private Date currDate = null;
+    private Date latestDate = null;
 
     final URL url;
     final String feedUrl;
@@ -54,12 +64,11 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
 		String language = "";
 		String copyright = "";
 		String author = "";
-		String pubdate = "";
+		String pubDate = "";
 		String guid = "";
 
 		XmlPullParserFactory factory;
 		try {
-
             factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
             XmlPullParser parser = factory.newPullParser();
@@ -77,7 +86,7 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
                     case ITEM:
                         if (isFeedHeader) {
                             isFeedHeader = false;
-                            feed = new Feed(title, link, description, language, copyright, pubdate);
+                            feed = new Feed(title, link, description, language, copyright, pubDate);
                             this.feedInfo = feed;
                         }
                         break;
@@ -97,7 +106,7 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
                         message.setGuid(guid);
                         message.setLink(link);
                         message.setTitle(title);
-                        message.setDate(pubdate);
+                        message.setDate(pubDate);
                         if (!feedSet.contains(message)) {
                             feed.getMessages().add(message);
                             feedSet.add(message);
@@ -109,7 +118,7 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
                             language = "";
                             copyright = "";
                             author = "";
-                            pubdate = "";
+                            pubDate = "";
                             guid = "";
                         }
                         eventType = parser.next();
@@ -118,10 +127,7 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
                         title = text;
                         break;
                     case DESCRIPTION:
-                        int index = text.indexOf("<");
-                        if (index <= 0)
-                            index = text.length();
-                        description = text.substring(0, index-1);
+                        description = text;
                         break;
                     case LINK:
                         link = text;
@@ -136,7 +142,22 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
                         author = text;
                         break;
                     case PUB_DATE:
-                        pubdate = text;
+                        pubDate = text;
+
+                        try {
+                            currDate = DATE_FORMATTER.parse(pubDate);
+                            if (currAtmostDate == null) {
+                                currAtmostDate = currDate;
+                            }
+                        }
+                        catch (Exception e) {
+                            currDate = null;
+                        }
+
+                        if (AppUtils.compareDates(latestDate, currDate)) {
+                            // no need to check feeds further.
+                            return feed;
+                        }
                         break;
                     case COPYRIGHT:
                         copyright = text;
@@ -179,6 +200,11 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
 				URL obj = new URL(currUrl);
 				HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
 				readFeedFromData(conn.getInputStream());
+
+				if (currAtmostDate != null)
+                    latestDate = currAtmostDate;
+                currAtmostDate = null;
+
 				return currUrl;
 			} catch (MalformedURLException e) {
 				e.printStackTrace();

@@ -2,7 +2,7 @@ package com.java.rssfeed.feed;
 
 import java.util.zip.CRC32;
 
-import static com.patech.utils.CommonUtils.EMPTY;
+import static com.patech.utils.AppUtils.EMPTY;
 
 public class FeedMessage {
     private String title = EMPTY;

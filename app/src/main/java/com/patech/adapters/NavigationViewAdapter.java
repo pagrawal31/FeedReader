@@ -19,7 +19,7 @@ import com.patech.feedreader.MainActivity;
 import com.patech.feedreader.R;
 import com.java.rssfeed.FeedInfoStore;
 import com.java.rssfeed.feed.Feed;
-import com.patech.utils.CommonUtils;
+import com.patech.utils.AppUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +70,7 @@ public class NavigationViewAdapter extends BaseAdapter {
                     String filterName = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_NAME));
                     String filterText = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_TEXT));
                     String filterType = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_TYPE));
-                    boolean isGlobal = CommonUtils.getBooleanFromInt(filterCursor.getInt((filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_GLOBAL))));
+                    boolean isGlobal = AppUtils.getBooleanFromInt(filterCursor.getInt((filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_GLOBAL))));
                     IFeedFilter filter;
                     if (filterType.equals(IncludeFeedFilter.FILTERTYPE)) {
                         filter = new IncludeFeedFilter(filterText, filterName, filterDesc, isGlobal);

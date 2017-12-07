@@ -3,10 +3,9 @@ package com.patech.dbhelper;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 
 import com.java.rssfeed.interfaces.IFeedFilter;
-import com.patech.utils.CommonUtils;
+import com.patech.utils.AppUtils;
 import com.java.rssfeed.feed.Feed;
 import com.patech.dbhelper.FeedContract.*;
 
@@ -28,7 +27,7 @@ public class DatabaseUtils {
                 FeedContract.feedTableAllProjection,                               // The columns to return
                 selection,                                // The columns for the WHERE clause
                 feed != null ? new String[]{feed.getLink()} :
-                        CommonUtils.EMPTY_SELECTION,                            // The values for the WHERE clause
+                        AppUtils.EMPTY_SELECTION,                            // The values for the WHERE clause
                 null,                                     // don't group the rows
                 null,                                     // don't filter by row groups
                 null                                 // The sort order
@@ -99,7 +98,7 @@ public class DatabaseUtils {
         values.put(FilterEntry.COLUMN_NAME_DESC, filter.getFilterDesc());
         values.put(FilterEntry.COLUMN_NAME_TEXT, filter.getFilterText());
         values.put(FilterEntry.COLUMN_NAME_TYPE, filter.getFilterType());
-        values.put(FilterEntry.COLUMN_NAME_GLOBAL, CommonUtils.getIntFromBoolean(filter.isGlobalFilter()));
+        values.put(FilterEntry.COLUMN_NAME_GLOBAL, AppUtils.getIntFromBoolean(filter.isGlobalFilter()));
         return db.insert(FilterEntry.TABLE_NAME, null, values);
     }
 
