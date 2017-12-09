@@ -24,6 +24,11 @@ public class AbstractPageParser {
     }
     public boolean filterFeedMessage(FeedMessage message) {
         Map<String, Boolean> filterResultMap = new HashMap<>();
+
+        // If there is only one exclude filter then all msgs are shown, this should not happen
+        //
+        filterResultMap.put(IncludeFeedFilter.class.getSimpleName(), false);
+
         for (IFeedFilter filter : filters) {
             String className = filter.getClass().getSimpleName();
             boolean currResult = filterIt(message, filter);

@@ -1,5 +1,8 @@
 package com.patech.utils;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -10,6 +13,9 @@ public class AppUtils {
     public static final String EMPTY = "";
     public static final String FEED_PREFIX = "feed/";
     public static final String FEEDLY_URL_PREFIX = "http://cloud.feedly.com/v3/search/feeds?n=20&q=";
+
+    public static final DateFormat STANDARD_DATE_FORMATTER = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    public static final DateFormat RSS_DATE_FORMATTER = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 
     public static final String[] EMPTY_SELECTION = new String[]{};
 
@@ -29,4 +35,12 @@ public class AppUtils {
         return false;
     }
 
+    public static Date parseDate(String date) {
+        Date resultDate = null;
+        try {
+            resultDate = STANDARD_DATE_FORMATTER.parse(date);
+        } catch (ParseException pe) {
+        }
+        return resultDate;
+    }
 }

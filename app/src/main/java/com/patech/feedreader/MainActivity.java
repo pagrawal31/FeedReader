@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
         initDB();
 
+        getSupportActionBar().setTitle(R.string.app_name);
         sharedPreferences = ((FeedReaderApplication)getApplication()).getSharedPreferences();
 
         firstTimeInit();

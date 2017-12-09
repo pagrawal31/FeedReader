@@ -2,6 +2,8 @@ package com.patech.feedreader;
 
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -21,9 +23,20 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.patech.utils.AppConstants;
+import com.patech.utils.CommonMsgs;
+
+import org.junit.validator.TestClassValidator;
 
 import java.io.InputStream;
 import java.net.URL;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnLongClick;
 
 public class MessageViewActivity extends AppCompatActivity {
 
@@ -33,42 +46,26 @@ public class MessageViewActivity extends AppCompatActivity {
     protected static final String AUTHOR = "AUTHOR";
     protected static final String GUID = "GUID";
     protected static final String DATE = "DATE";
-    TextView titleTxtView;
-	TextView descriptionTxtView;
-	TextView linkTxtView;
-	TextView dateView;
-	Button openLinkBtn;
-	
-	public MessageViewActivity() {
+
+    @BindView(R.id.titleTxtView) TextView titleTxtView;
+	@BindView(R.id.descriptionTxtView) TextView descriptionTxtView;
+	@BindView(R.id.linkTxtView) TextView linkTxtView;
+	@BindView(R.id.dateView) TextView dateView;
+	@BindView(R.id.openLinkBtn) Button openLinkBtn;
+
+    public MessageViewActivity() {
 	}
 	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-//		getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
-//		getActionBar().setDisplayHomeAsUpEnabled(true);
-
         setContentView(R.layout.feedmessage_view);
+        ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		titleTxtView = (TextView) findViewById(R.id.titleTxtView);
-		descriptionTxtView = (TextView) findViewById(R.id.descriptionTxtView);
-		linkTxtView = (TextView) findViewById(R.id.linkTxtView);
-		dateView = (TextView) findViewById(R.id.dateView);
-		
-		openLinkBtn = (Button) findViewById(R.id.openLinkBtn);
-		openLinkBtn.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				onClickOpenLinkBtn(v);
-			}
-		});
-		
 		Intent i = getIntent();
 		String title = i.getStringExtra(TITLE);
 		title = title.isEmpty() ? " " : title;
@@ -96,13 +93,14 @@ public class MessageViewActivity extends AppCompatActivity {
 			}
 		};
 
-		titleTxtView.setText(author + " " + title);
-//		descriptionTxtView.setText(Html.fromHtml(description, imageGetter, null));
+		titleTxtView.setText(author + " : " + title);
         descriptionTxtView.setText(Html.fromHtml(description));
 		linkTxtView.setText(link);
 		dateView.setText(date);
 	}
-	
+
+
+	@OnClick(R.id.openLinkBtn)
 	public void onClickOpenLinkBtn(View v) {
 		if (linkTxtView != null) {
 			String url = linkTxtView.getText().toString();
@@ -111,6 +109,27 @@ public class MessageViewActivity extends AppCompatActivity {
 			startActivity(i);
 		}
 	}
+
+    @OnLongClick(R.id.descriptionTxtView)
+    public boolean createFilterForDesc(View v) {
+        createFilter(v);
+        return true;
+    }
+
+	@OnLongClick(R.id.titleTxtView)
+    public boolean createFilterForTitle(View v) {
+        createFilter(v);
+        return true;
+    }
+
+    public void createFilter(View v) {
+        TextView view = (TextView)v;
+        String txt = view.getText().toString();
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(AppConstants.FILTER_DATA, txt);
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(getApplicationContext(), CommonMsgs.getTextCopied(txt), Toast.LENGTH_SHORT).show();
+    }
 
 	class ImageGetterAsyncTask extends AsyncTask<TextView, Void, Bitmap> {
 

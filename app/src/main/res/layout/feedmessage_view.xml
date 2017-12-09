@@ -19,33 +19,50 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <TextView android:text="@string/title"
+        android:gravity="center_horizontal" android:layout_width="match_parent" android:textStyle="bold" android:layout_height="wrap_content" />
+
     <TextView
         android:id="@+id/titleTxtView" android:text="@string/title"
         android:layout_width="wrap_content" android:layout_height="wrap_content" />
 
     <Space android:id="@+id/space1" android:layout_width="fill_parent"
-        android:layout_height="@dimen/space_5_5_5_10" android:layout_below="@id/titleTxtView" />
+        android:layout_height="@dimen/padding_10_10_15_20" android:layout_below="@id/titleTxtView" />
 
+    <TextView
+        android:text="@string/description"
+        android:gravity="center_horizontal" android:textStyle="bold" android:layout_width="match_parent" android:layout_height="wrap_content" />
     <TextView
         android:id="@+id/descriptionTxtView" android:text="@string/description"
         android:layout_width="wrap_content" android:layout_height="wrap_content" />
 
     <Space android:id="@+id/space2" android:layout_width="fill_parent"
-        android:layout_height="@dimen/space_5_5_5_10" android:layout_below="@id/descriptionTxtView" />
+        android:layout_height="@dimen/padding_10_10_15_20" android:layout_below="@id/descriptionTxtView" />
 
     <TextView
         android:id="@+id/linkTxtView" android:text="@string/link"
         android:layout_width="wrap_content" android:layout_height="wrap_content" />
 
     <Space android:id="@+id/space3" android:layout_width="fill_parent"
-        android:layout_height="@dimen/space_5_5_5_10" android:layout_below="@id/linkTxtView" />
+        android:layout_height="@dimen/padding_10_10_15_20" android:layout_below="@id/linkTxtView" />
 
-    <TextView
-        android:id="@+id/dateView" android:text="@string/publishDate"
-        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView android:text="@string/publishDate" android:layout_weight="1"
+            android:gravity="left" android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/dateView" android:text="@string/publishDate" android:layout_weight="1"
+            android:layout_gravity="right"
+            android:layout_width="wrap_content" android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <Space android:id="@+id/space4" android:layout_width="fill_parent"
-        android:layout_height="@dimen/space_5_5_5_10" android:layout_below="@id/dateView" />
+        android:layout_height="@dimen/padding_10_10_15_20" android:layout_below="@id/dateView" />
 
     <Button
         android:id="@+id/openLinkBtn"

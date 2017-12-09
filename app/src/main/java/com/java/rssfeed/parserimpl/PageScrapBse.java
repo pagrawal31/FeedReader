@@ -38,8 +38,7 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
     private static Date currAtmostDate = null;
     private static Date currDate = null;
     static Feed feedInfo = null;
-    private static final DateFormat DATE_FORMATTER = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-    
+
     public PageScrapBse(String feedUrl) {
         this.feedUrl = feedUrl;
     }
@@ -126,7 +125,7 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
                                 
                                 pubDate = cleanupHtmlMarkup(dateNode.toString());
                                 try {
-                                	currDate = DATE_FORMATTER.parse(pubDate);
+                                	currDate = AppUtils.STANDARD_DATE_FORMATTER.parse(pubDate);
                                     if (currAtmostDate == null) {
                                         currAtmostDate = currDate;
                                     }

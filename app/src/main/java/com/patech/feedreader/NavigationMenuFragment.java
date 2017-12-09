@@ -1,17 +1,24 @@
 package com.patech.feedreader;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.java.rssfeed.FeedInfoStore;
+import com.java.rssfeed.feed.Feed;
 import com.patech.adapters.FeedMessageDisplayAdapter;
 import com.patech.dialog.AddFilterDialog;
+import com.patech.utils.AppUtils;
 import com.patech.utils.CollectionUtils;
 import com.java.rssfeed.feed.FeedMessage;
 import com.java.rssfeed.ReadTest;
+import com.patech.utils.CommonMsgs;
 
 import android.app.DialogFragment;
 import android.app.ListFragment;
@@ -20,6 +27,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,6 +51,7 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
 	Set<FeedMessage> messageList;
 	int idx = 0;
 	StringBuffer prefVariable = new StringBuffer();
+	String title = AppUtils.EMPTY;
 
     public interface NavigationMenuInterface {
         public boolean onClickManagerFilters(int position);
@@ -66,6 +75,10 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
 			prefVariable.append("pref_");
 			prefVariable.append(idx);
 		}
+        Feed currFeed = FeedInfoStore.getInstance().getFeed(idx);
+		title = currFeed.getTitle();
+
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
 
 		try {
 			mCallback = (MainActivity) context;
@@ -85,25 +98,21 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
 		int itemId = item.getItemId();
 		switch (itemId) {
 		case R.id.addFilter:
-//		    Toast.makeText(getActivity(), "inside fragment", Toast.LENGTH_SHORT).show();
-
             DialogFragment mDialog = AddFilterDialog.newInstance();
             mDialog.show(getFragmentManager(), "Add Filter");
 			break;
+
 		case R.id.showAll:
-			
 			SharedPreferences.Editor editor = preferences.edit();
 			editor.putBoolean(prefVariable.toString(), false);
 			editor.commit();
-			
 			showMessage(false);
 			break;
+
 		case R.id.showFiltered:
-			
 			SharedPreferences.Editor editor1 = preferences.edit();
 			editor1.putBoolean(prefVariable.toString(), true);
 			editor1.commit();
-			
 			Toast.makeText(getActivity(), "Refreshing", Toast.LENGTH_SHORT).show();
 			showMessage(true);
 			break;
@@ -131,7 +140,19 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
 			messageList = ReadTest.getFilteredMessages(idx);
 
 		listSize = messageList.size();
-		List<FeedMessage> list = listSize == 0 ? Collections.EMPTY_LIST : new ArrayList(messageList);
+
+		List<FeedMessage> currMsgs = new ArrayList<>(messageList);
+		if (listSize > 0)
+		Collections.sort(currMsgs, new Comparator<FeedMessage>() {
+            @Override
+            public int compare(FeedMessage msg1, FeedMessage msg2) {
+                Date date1 = AppUtils.parseDate(msg1.getDate());
+                Date date2 = AppUtils.parseDate(msg2.getDate());
+                return AppUtils.compareDates(date1, date2) ? -1 : 0;
+            }
+        });
+        
+        List<FeedMessage> list = listSize == 0 ? Collections.EMPTY_LIST : currMsgs;
 		FeedMessageDisplayAdapter adapter = new FeedMessageDisplayAdapter(getActivity(), list);
 		setListAdapter(adapter);
         ListView listView = getListView();
@@ -143,7 +164,6 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-//        menu.setHeaderTitle(Countries[info.position]);
         menu.setHeaderTitle("Position : " + info.position);
         String[] menuItems = getResources().getStringArray(R.array.menu);
         for (int i = 0; i<menuItems.length; i++) {
@@ -172,9 +192,6 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
                 break;
             default:
         }
-
-//        TextView text = (TextView)findViewById(R.id.footer);
-//        Toast.makeText(getContext(), String.format("Selected %s for item %s", menuItemName, listIdx), Toast.LENGTH_SHORT).show();
         return true;
     }
 
@@ -182,7 +199,6 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
         T msg = null;
 
         if (collection != null && !collection.isEmpty() && index < collection.size()) {
-
             Iterator<T> iterator = collection.iterator();
             int count = 0;
             while (iterator.hasNext()) {
@@ -199,7 +215,6 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
     @Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-//		int counter = 0;
 		setHasOptionsMenu(true);
 		boolean filtered = preferences.getBoolean(prefVariable.toString(), false);
 		showMessage(filtered);
@@ -218,6 +233,4 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
 					Toast.LENGTH_SHORT).show();
 		}
 	}
-
-
 }

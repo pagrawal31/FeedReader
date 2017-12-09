@@ -36,8 +36,6 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
     String currentPageData = null;
     Feed feedInfo = null;
 
-    private static final DateFormat DATE_FORMATTER = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
-
     private Date currAtmostDate = null;
     private Date currDate = null;
     private Date latestDate = null;
@@ -145,7 +143,8 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
                         pubDate = text;
 
                         try {
-                            currDate = DATE_FORMATTER.parse(pubDate);
+                            currDate = AppUtils.RSS_DATE_FORMATTER.parse(pubDate);
+                            pubDate = AppUtils.STANDARD_DATE_FORMATTER.format(currDate);
                             if (currAtmostDate == null) {
                                 currAtmostDate = currDate;
                             }

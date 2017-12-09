@@ -59,35 +59,6 @@ public class ReadTest {
 		}
 		return Collections.EMPTY_SET;
 	}
-    
-    public static void main(String[] args) {
-        int sleepDuration = 300000;
-        while (true) {
-            for (Feed feed : FeedInfoStore.getInstance().getFeedInfoList()) {
-                try {
-                    IPageParser parser = getFeedParser(feed);
-                    Feed newFeed = parser.readFeed();
-                    boolean feedInfoPrinted = false;
-                    for (FeedMessage message : feed.getMessages()) {
-                        if (parser.filterFeedMessage(message)) {
-                            if (!feedInfoPrinted) {
-                                System.out.println("Feed from :" + feed.getLink());
-                                feedInfoPrinted = true;
-                            }
-                            System.out.println(message);
-                        }
-                    }
-                } catch (Exception e) {
-                    System.out.println("Failed in getting the Info [" + e.getMessage() + "]");
-                }
-            }
-            try {
-                Thread.sleep(sleepDuration);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     public static IPageParser getFeedParser(int idx) throws MalformedURLException {
     	Feed feed = FeedInfoStore.getInstance().getFeedInfoList().get(idx);
