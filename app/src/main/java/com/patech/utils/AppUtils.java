@@ -1,8 +1,12 @@
 package com.patech.utils;
 
+import com.java.rssfeed.feed.Feed;
+import com.java.rssfeed.feed.FeedMessage;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 
 /**
@@ -43,4 +47,15 @@ public class AppUtils {
         }
         return resultDate;
     }
+
+    public static class Compare implements Comparator<FeedMessage> {
+        public int compare(FeedMessage msg1, FeedMessage msg2) {
+            Date date1 = AppUtils.parseDate(msg1.getDate());
+            Date date2 = AppUtils.parseDate(msg2.getDate());
+            if (date1 == null || date2 == null)
+                return 0;
+            return date2.compareTo(date1);
+        }
+    }
+
 }

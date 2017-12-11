@@ -20,12 +20,17 @@ import java.util.List;
 public class FeedMessageDisplayAdapter extends ArrayAdapter<FeedMessage> {
 
     private final Context context;
-    private final List<FeedMessage> values;
+    private List<FeedMessage> values;
 
     public FeedMessageDisplayAdapter(Context context, List<FeedMessage> values) {
         super(context, -1, values);
         this.context = context;
         this.values = values;
+    }
+
+    @Override
+    public int getCount() {
+        return values.size();
     }
 
     @Override
@@ -48,4 +53,7 @@ public class FeedMessageDisplayAdapter extends ArrayAdapter<FeedMessage> {
         return rowView;
     }
 
+    public void setData(List<FeedMessage> messageList) {
+        this.values = messageList;
+    }
 }

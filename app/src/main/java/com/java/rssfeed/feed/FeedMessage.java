@@ -1,10 +1,15 @@
 package com.java.rssfeed.feed;
 
+import com.patech.utils.AppUtils;
+
+import java.util.Comparator;
+import java.util.Date;
 import java.util.zip.CRC32;
 
 import static com.patech.utils.AppUtils.EMPTY;
 
-public class FeedMessage {
+public class FeedMessage // implements Comparator
+{
     private String title = EMPTY;
     private String description = EMPTY;
     private String link = EMPTY;
@@ -57,7 +62,16 @@ public class FeedMessage {
     public int hashCode() {
         return getId();
     }
-    
+
+//    @Override
+//    public int compare(Object o1, Object t1) {
+//        Date date1 = AppUtils.parseDate(msg1.getDate());
+//        Date date2 = AppUtils.parseDate(msg2.getDate());
+//        if (date1 == null || date2 == null)
+//            return 0;
+//        return date2.compareTo(date1);
+//    }
+
     @Override
     public boolean equals(Object obj) {
         return getId() == obj.hashCode();

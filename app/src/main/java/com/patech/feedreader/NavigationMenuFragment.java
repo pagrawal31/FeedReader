@@ -48,8 +48,9 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
 
 	String[] messageArray  = null;
 	int listSize = 0;
-	Set<FeedMessage> messageList;
-	int idx = 0;
+	List<FeedMessage> messageList = Collections.EMPTY_LIST;
+    FeedMessageDisplayAdapter adapter;
+    int idx = 0;
 	StringBuffer prefVariable = new StringBuffer();
 	String title = AppUtils.EMPTY;
 
@@ -123,42 +124,45 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		return super.onCreateView(inflater, container, savedInstanceState);
+		View view = super.onCreateView(inflater, container, savedInstanceState);
+
+        return view;
 	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		getActivity().setTitle("Feeds");
+
+		adapter = new FeedMessageDisplayAdapter(getActivity(), messageList);
+        setListAdapter(adapter);
+        ListView listView = getListView();
+        listView.setOnItemClickListener(this);
+        registerForContextMenu(listView);
+        adapter.notifyDataSetChanged();
+
 		super.onViewCreated(view, savedInstanceState);
 	}
 	
 	public void showMessage(boolean filteredView) {
 		int counter = 0;
+		Set<FeedMessage> currMsgs;
 		if (!filteredView)
-			messageList = ReadTest.getMessages(idx);
+            currMsgs = ReadTest.getMessages(idx);
 		else
-			messageList = ReadTest.getFilteredMessages(idx);
+            currMsgs = ReadTest.getFilteredMessages(idx);
 
-		listSize = messageList.size();
+		listSize = currMsgs.size();
 
-		List<FeedMessage> currMsgs = new ArrayList<>(messageList);
-		if (listSize > 0)
-		Collections.sort(currMsgs, new Comparator<FeedMessage>() {
-            @Override
-            public int compare(FeedMessage msg1, FeedMessage msg2) {
-                Date date1 = AppUtils.parseDate(msg1.getDate());
-                Date date2 = AppUtils.parseDate(msg2.getDate());
-                return AppUtils.compareDates(date1, date2) ? -1 : 0;
-            }
-        });
-        
-        List<FeedMessage> list = listSize == 0 ? Collections.EMPTY_LIST : currMsgs;
-		FeedMessageDisplayAdapter adapter = new FeedMessageDisplayAdapter(getActivity(), list);
-		setListAdapter(adapter);
-        ListView listView = getListView();
-        listView.setOnItemClickListener(this);
-        registerForContextMenu(listView);
-		adapter.notifyDataSetChanged();
+
+        if (listSize > 0) {
+            messageList = new ArrayList<>(currMsgs);
+            Collections.sort(messageList, new AppUtils.Compare());
+        } else {
+            messageList = Collections.EMPTY_LIST;
+        }
+
+        adapter.setData(messageList);
+        adapter.notifyDataSetChanged();
 	}
 
     @Override
