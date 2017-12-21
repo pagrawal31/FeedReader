@@ -3,6 +3,8 @@ package com.java.rssfeed.feed;
 import com.patech.utils.AppUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class Feed {
@@ -13,8 +15,10 @@ public class Feed {
     final String language;
     final String copyright;
     final String pubDate;
+    private String lastUpdated = "NA";
+    private String lastScanned = "NA";
     
-    final List<FeedMessage> entries = new ArrayList<FeedMessage>();
+    final List<FeedMessage> entries = Collections.synchronizedList(new ArrayList<FeedMessage>());
 
     public Feed(String name, String title, String link, String description, String language,
         String copyright, String pubDate) {
@@ -26,6 +30,21 @@ public class Feed {
         this.copyright = copyright;
         this.pubDate = pubDate;
     }
+    public void setLastUpdated(String updatedOn) {
+        this.lastUpdated = updatedOn;
+    }
+    public String getLastUpdated() {
+        return this.lastUpdated;
+    }
+
+    public String getLastScanned() {
+        return lastScanned;
+    }
+
+    public void setLastScanned(String lastScanned) {
+        this.lastScanned = lastScanned;
+    }
+
     public static class FeedBuilder {
         private String name;
         private String title;

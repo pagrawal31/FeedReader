@@ -14,7 +14,10 @@
             <Space android:id="@+id/space4" android:layout_width="fill_parent" android:layout_height="@dimen/space_10_10_10_15" android:layout_below="@id/filterText" />
             <TextView android:textSize="@dimen/text" android:textStyle="normal" android:textColor="@color/text" android:id="@+id/text3" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/dialog_feed_url" android:layout_below="@id/space4" />
             <Space android:id="@+id/space5" android:layout_width="fill_parent" android:layout_height="@dimen/space_5_5_5_10" android:layout_below="@id/text3" />
-            <EditText android:textSize="@dimen/text" android:textStyle="normal" android:textColor="@color/edittext_text" android:id="@+id/url" android:background="@drawable/edit_text" android:paddingLeft="@dimen/editTextPaddingLeft" android:paddingTop="@dimen/editTextPaddingTop" android:paddingRight="@dimen/editTextPaddingRight" android:paddingBottom="@dimen/editTextPaddingBottom" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="@dimen/editTextMinHeight" android:hint="@string/enter_url" android:singleLine="true" android:layout_below="@id/space5" android:inputType="textUri" />
+            <EditText android:textSize="@dimen/text" android:textStyle="normal" android:textColor="@color/edittext_text"
+                android:clickable="true"
+                android:longClickable="true"
+                android:id="@+id/url" android:background="@drawable/edit_text" android:paddingLeft="@dimen/editTextPaddingLeft" android:paddingTop="@dimen/editTextPaddingTop" android:paddingRight="@dimen/editTextPaddingRight" android:paddingBottom="@dimen/editTextPaddingBottom" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="@dimen/editTextMinHeight" android:hint="@string/enter_url" android:singleLine="true" android:layout_below="@id/space5" android:inputType="textUri" />
             <Space android:id="@+id/space6" android:layout_width="fill_parent" android:layout_height="@dimen/space_15_15_20_25" android:layout_below="@id/url" />
             <CheckBox
                 android:id="@+id/includeGlobalFilterBox" android:layout_below="@id/space6"

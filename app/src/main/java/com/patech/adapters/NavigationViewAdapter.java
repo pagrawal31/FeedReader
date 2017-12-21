@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.java.rssfeed.ReadTest;
 import com.java.rssfeed.filterimpl.ExcludeFeedFilter;
+import com.java.rssfeed.filterimpl.FeedFilter;
 import com.java.rssfeed.filterimpl.IncludeFeedFilter;
 import com.java.rssfeed.interfaces.IFeedFilter;
 import com.patech.dbhelper.DatabaseUtils;
@@ -42,9 +43,10 @@ public class NavigationViewAdapter extends BaseAdapter {
         mWriterFeedDB = mainActivity.getWritableDatabase();
         mReaderFeedDB = mainActivity.getReadableDatabase();
         menus = new ArrayList<>();
-         if (FeedInfoStore.getInstance().getFeedSize() == 0) {
+        if (FeedInfoStore.getInstance().getFeedSize() == 0) {
             updateFromDatabase();
-         }
+        }
+
         updateList();
     }
 
@@ -76,6 +78,9 @@ public class NavigationViewAdapter extends BaseAdapter {
                         filter = new IncludeFeedFilter(filterText, filterName, filterDesc, isGlobal);
                     } else {
                         filter = new ExcludeFeedFilter(filterText, filterName, filterDesc, isGlobal);
+                    }
+                    if (isGlobal) {
+                        FeedInfoStore.getInstance().addGlobalFilter(filter);
                     }
                     ReadTest.addFilterToFeed(newFeed, filter);
                 }
@@ -144,17 +149,27 @@ public class NavigationViewAdapter extends BaseAdapter {
         } else {
             row = convertView;
         }
-        TextView titleView = (TextView) row.findViewById(R.id.title);
-        TextView lastUpdatedValue = (TextView) row.findViewById(R.id.lastUpdatedVal);
 
-        String title = menus.get(position).getTitle();
-        String summary = menus.get(position).getDescription();
+        TextView titleView = (TextView) row.findViewById(R.id.title);
+        TextView lastUpdatedView = (TextView) row.findViewById(R.id.lastUpdatedFeedVal);
+        TextView lastUpdatedScanView = (TextView) row.findViewById(R.id.lastUpdatedScanVal);
+        //
+
+        Feed feed = menus.get(position);
+        String title = feed.getTitle();
+        String summary = feed.getDescription();
+        String lastUpdatedVal = feed.getLastUpdated();
+        String lastScannedDate = feed.getLastScanned();
+
         if (title == null || title.isEmpty()) {
             title = "Menu:" + position;
         }
 
+        lastUpdatedView.setText(lastUpdatedVal);
+        lastUpdatedScanView.setText(lastScannedDate);
+
+
         titleView.setText(title);
-//        summartView.setText(summary);
         return row;
     }
 }

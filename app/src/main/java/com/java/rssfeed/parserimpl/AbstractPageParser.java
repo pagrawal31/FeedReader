@@ -1,11 +1,13 @@
 package com.java.rssfeed.parserimpl;
 
+import com.java.rssfeed.feed.Feed;
 import com.java.rssfeed.feed.FeedMessage;
 import com.java.rssfeed.filterimpl.ExcludeFeedFilter;
 import com.java.rssfeed.filterimpl.IncludeFeedFilter;
 import com.java.rssfeed.interfaces.IFeedFilter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -22,6 +24,21 @@ public class AbstractPageParser {
         this.filters = new HashSet<>();
         this.feedSet = new LinkedHashSet<>();
     }
+
+    public boolean filterFeedMessageExcluded(FeedMessage message) {
+
+        boolean soFarResult = true;
+        for (IFeedFilter filter : filters) {
+            if (filter instanceof IncludeFeedFilter)
+                continue;
+
+            boolean currResult = filterIt(message, filter);
+            soFarResult = filter.mergeResult(soFarResult, currResult);
+        }
+
+        return soFarResult;
+    }
+
     public boolean filterFeedMessage(FeedMessage message) {
         Map<String, Boolean> filterResultMap = new HashMap<>();
 
@@ -77,5 +94,19 @@ public class AbstractPageParser {
         filters.clear();
     }
 
+    protected void updateFeedDate(Feed feedInfo, String latestDate) {
+	    feedInfo.setLastUpdated(latestDate);
+    }
+
+    protected void updateFeedScannedDate(Feed feedInfo, String latestDate) {
+        feedInfo.setLastScanned(latestDate);
+    }
+
+    protected void clearExistingSet(Set<FeedMessage> feedSet, List<FeedMessage> localEntries) {
+        if (!localEntries.isEmpty()) {
+            feedSet.clear();
+            feedSet.addAll(localEntries);
+        }
+    }
 
 }

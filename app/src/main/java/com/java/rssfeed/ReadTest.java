@@ -1,9 +1,11 @@
 package com.java.rssfeed;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -17,47 +19,90 @@ import com.java.rssfeed.interfaces.IFeedFilter;
 import com.java.rssfeed.interfaces.IPageParser;
 import com.java.rssfeed.parserimpl.PageScrapBse;
 import com.java.rssfeed.parserimpl.RSSFeedParser;
+import com.patech.enums.FilterLevel;
 
 public class ReadTest {
     
     private final static String bseCorporateAnnBaseUrl = "http://www.bseindia.com/corporates/ann.aspx";
 
-	public static Set<FeedMessage> getMessages(int i) {
-		Feed feed = null;
+    public static List<FeedMessage> getMessages(int i, FilterLevel level) {
+        if (level == FilterLevel.All) {
+            return getFilteredMessages(i);
+        } else if (level == FilterLevel.EXCLUDED) {
+            return getFilteredMessagesExcluded(i);
+        }
+        return getMessages(i);
+    }
+
+    public static Collection<FeedMessage> getAllMessages(int i) {
+        IPageParser parser = null;
+        Feed feed = null;
+        try {
+            feed = FeedInfoStore.getInstance().getFeed(i);
+            parser = getFeedParser(i);
+            parser.readFeed(feed);
+        } catch (Exception e) {
+            System.out.println("Failed in getting the Info [" + e.getMessage()
+                    + "]");
+        }
+        if (parser != null && feed != null) {
+            return new ArrayList<>(feed.getMessages());
+        }
+        return Collections.EMPTY_LIST;
+    }
+
+	public static List<FeedMessage> getMessages(int i) {
 		IPageParser parser = null;
-		try {
+        try {
 			parser = getFeedParser(i);
-			feed = parser.readFeed();
 		} catch (Exception e) {
 			System.out.println("Failed in getting the Info [" + e.getMessage()
 					+ "]");
 		}
 		if (parser != null) {
-			return parser.getMessages();
+            return new ArrayList<>(getAllMessages(i));
 		}
-		return Collections.EMPTY_SET;
+		return Collections.EMPTY_LIST;
 	}
-	
-	public static Set<FeedMessage> getFilteredMessages(int i) {
-		Feed feed = null;
+
+    public static List<FeedMessage> getFilteredMessagesExcluded(int i) {
+        IPageParser parser = null;
+        List<FeedMessage> filteredMsg = new ArrayList<>();
+        try {
+            parser = getFeedParser(i);
+        } catch (Exception e) {
+            System.out.println("Failed in getting the Info [" + e.getMessage()
+                    + "]");
+        }
+        if (parser != null) {
+            for (FeedMessage msg : getAllMessages(i)) {
+                if (parser.filterFeedMessageExcluded(msg)) {
+                    filteredMsg.add(msg);
+                }
+            }
+            return filteredMsg;
+        }
+        return Collections.EMPTY_LIST;
+    }
+
+	public static List<FeedMessage> getFilteredMessages(int i) {
 		IPageParser parser = null;
-		Set<FeedMessage> filteredMsg = new LinkedHashSet<>();
+        List<FeedMessage> filteredMsg = new ArrayList<>();
 		try {
 			parser = getFeedParser(i);
-			feed = parser.readFeed();
 		} catch (Exception e) {
 			System.out.println("Failed in getting the Info [" + e.getMessage()
 					+ "]");
 		}
 		if (parser != null) {
-			for (FeedMessage msg : parser.getMessages()) {
+			for (FeedMessage msg : getAllMessages(i)) {
 				if (parser.filterFeedMessage(msg)) {
 					filteredMsg.add(msg);
 				}
 			}
 			return filteredMsg;
 		}
-		return Collections.EMPTY_SET;
+		return Collections.EMPTY_LIST;
 	}
 
     public static IPageParser getFeedParser(int idx) throws MalformedURLException {

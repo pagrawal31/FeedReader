@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -30,14 +31,13 @@ import android.os.AsyncTask;
 
 public class PageScrapBse extends AbstractPageParser implements IPageParser {
 
-    Feed feed = null;
     final Pattern ptnContent = Pattern.compile("<span id=\"ctl00_ContentPlaceHolder1_lblann\">(.+?)</span>");
     final Pattern ptnNextPage = Pattern.compile("<span id=\"ctl00_ContentPlaceHolder1_lblNext\" class=\"annlnk04\">(.+?)</span>");
     final String feedUrl;
     private static Date latestDate = null;
     private static Date currAtmostDate = null;
     private static Date currDate = null;
-    static Feed feedInfo = null;
+    private static Feed feedInfo = null;
 
     public PageScrapBse(String feedUrl) {
         this.feedUrl = feedUrl;
@@ -88,19 +88,22 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
      *          otherwise true.
      */
     private boolean updateFeed(String tableContent) {
+        List<FeedMessage> localEntries = new ArrayList<>();
+        int counter = 0;
+        boolean first = false;
+        String name = null;
+        String title = null;
+        String link = null;
+        String pubDate = null;
+        String endTime = null;
+        String description = null;
+
         try {
-        	this.feedInfo = feed;
             org.jsoup.nodes.Document document = Jsoup.parse(tableContent);
             Elements tblElements = document.getElementsByTag("table");
-            int counter = 0;
-            boolean first = false;
-            String name = null;
-            String title = null;
-            String link = null;
-            String pubDate = null;
-            String endTime = null;
-            String description = null;
+
             if (tblElements != null && !tblElements.isEmpty()) {
+                outerloop:
                 for (org.jsoup.nodes.Element element : tblElements) {
                     for (Node node : element.childNodes()) {
                         for (Node trNode : node.childNodes()) {
@@ -108,54 +111,52 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
                                 first = true;
                                 continue; // first one is header.
                             }
-                            int position = counter %4;
+                            int position = counter % 4;
                             switch (position) {
-                            case 0:
-                                // tr contains three td here
-                                // first is company name
-                                // second is Type of update
-                                // third is link of pdf
-                                name = cleanupHtmlMarkup(trNode.childNode(0).childNode(0).toString());
-                                title = cleanupHtmlMarkup(trNode.childNode(1).childNode(0).toString());
-                                link = trNode.childNode(2).childNode(0).attributes().get("href");
-                                break;
-                            case 1:
-                                Node dateInfoNode = trNode.childNode(0);
-                                Node dateNode = getDateNode(dateInfoNode);
-                                
-                                pubDate = cleanupHtmlMarkup(dateNode.toString());
-                                try {
-                                	currDate = AppUtils.STANDARD_DATE_FORMATTER.parse(pubDate);
-                                    if (currAtmostDate == null) {
-                                        currAtmostDate = currDate;
+                                case 0:
+                                    // tr contains three td here
+                                    // first is company name
+                                    // second is Type of update
+                                    // third is link of pdf
+                                    name = trNode.childNode(0).toString();
+                                    title = cleanupHtmlMarkup(trNode.childNode(1).childNode(0).toString());
+                                    link = trNode.childNode(2).childNode(0).attributes().get("href");
+                                    break;
+                                case 1:
+                                    Node dateInfoNode = trNode.childNode(0);
+                                    Node dateNode = getDateNode(dateInfoNode);
+
+                                    pubDate = cleanupHtmlMarkup(dateNode.toString());
+                                    try {
+                                        currDate = AppUtils.STANDARD_DATE_FORMATTER.parse(pubDate);
+                                        if (currAtmostDate == null) {
+                                            currAtmostDate = currDate;
+                                        }
+                                    } catch (Exception e) {
+                                        currDate = null;
                                     }
-                                }
-                                catch (Exception e) {
-                                    currDate = null;
-                                }
-                                if (AppUtils.compareDates(latestDate, currDate)) {
-                                    // no need to check feeds further.
-                                    return false;
-                                }
-//                                endTime = dateInfoNode.childNode(3).toString().replaceAll("&nbsp;", "");
-                                break;
-                            case 2:
-                                description = trNode.childNode(0).childNode(0).toString();
-                                break;
-                            case 3:
-                                FeedMessage message = new FeedMessage();
-                                message.setAuthor(name);
-                                message.setDescription(description);
-                                message.setLink(link);
-                                message.setTitle(title);
-                                message.setDate(pubDate);
-                                
-								if (!feedSet.contains(message)) {
-									feed.getMessages().add(message);
-									feedSet.add(message);
-								}
-                                
-                                // add message to feed here.
+                                    if (AppUtils.compareDates(latestDate, currDate)) {
+                                        // no need to check feeds further.
+                                        break outerloop;
+                                    }
+                                    break;
+                                case 2:
+                                    description = trNode.toString();
+                                    break;
+                                case 3:
+                                    FeedMessage message = new FeedMessage();
+                                    message.setAuthor(name);
+                                    message.setDescription(description);
+                                    message.setLink(link);
+                                    message.setTitle(title);
+                                    message.setDate(pubDate);
+
+                                    if (!feedSet.contains(message)) {
+                                        localEntries.add(message);
+                                        feedSet.add(message);
+                                    }
+
+                                    // add message to feed here.
                                 {
                                     message = null;
                                     name = "";
@@ -171,10 +172,16 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
                     }
                 }
             }
-            
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        clearExistingSet(feedSet, localEntries);
+
+        for (FeedMessage msg : AppUtils.getReverseList(localEntries)) {
+            this.feedInfo.getMessages().add(msg);
+        }
+
         return true;
     }
 
@@ -225,9 +232,9 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
     }
 
     @Override
-    public Feed readFeed() {
+    public void readFeed(Feed feedInfo) {
+        this.feedInfo = feedInfo;
     	read();
-    	return null;
     }
     
 
@@ -252,7 +259,7 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
 					return currUrl;
 				}
 				System.setProperty("http.agent", "");
-				feed = new Feed("Bse Corporate Filing", "http://www.bseindia.com/corporates/", null, null, null, null);
+//				feed = new Feed("Bse Corporate Filing", "http://www.bseindia.com/corporates/", null, null, null, null);
 		        String originalUrl = url[0];
 		        while (originalUrl != null && !originalUrl.isEmpty()) {
 		            if (!originalUrl.startsWith("http")) {
@@ -265,7 +272,10 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
 		        if (currAtmostDate != null)
 		            latestDate = currAtmostDate;
 		        currAtmostDate = null;
-				return url[0];
+		        if (latestDate != null)
+		            updateFeedDate(feedInfo, AppUtils.formatDate(latestDate));
+                updateFeedScannedDate(feedInfo, AppUtils.formatDate(new Date()));
+                return url[0];
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -279,8 +289,8 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
 			FeedInfoStore.releseHandle(url);
 		}
 	}
-	
-	private Node getDateNode(Node dateInfoNode) {
+
+    private Node getDateNode(Node dateInfoNode) {
         List<Node> children = dateInfoNode.childNodes();
         Node dateNode = null;
         if (children.size() == 3) {

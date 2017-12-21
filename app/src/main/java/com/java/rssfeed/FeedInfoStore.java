@@ -2,11 +2,14 @@ package com.java.rssfeed;
 
 import com.java.rssfeed.feed.Feed;
 import com.java.rssfeed.filterimpl.FeedFilter;
+import com.java.rssfeed.interfaces.IFeedFilter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class FeedInfoStore {
 
@@ -14,7 +17,7 @@ public class FeedInfoStore {
     private static Map<String, Integer> feedUrlToIndexMap;
     private static Map<Integer, Feed> indexToFeedMap;
     private int feedCounter = 0;
-    private static List<FeedFilter> globalFilters;
+    private static Set<IFeedFilter> globalFilters;
 
     // create wrapper method for request/release
     private static FeedInfoStore INSTANCE;
@@ -34,14 +37,14 @@ public class FeedInfoStore {
         feedUrlToIndexMap = new HashMap<>();
         feedInfoList = new ArrayList<>();
         indexToFeedMap = new HashMap<>();
-        globalFilters = new ArrayList<>();
+        globalFilters = new HashSet<>();
     }
 
-    public static List<FeedFilter> getGlobalFilters() {
-        return globalFilters;
+    public List<IFeedFilter> getGlobalFilters() {
+        return new ArrayList<>(globalFilters);
     }
 
-    public static void addGlobalFilter(FeedFilter filter) {
+    public void addGlobalFilter(IFeedFilter filter) {
         globalFilters.add(filter);
     }
 

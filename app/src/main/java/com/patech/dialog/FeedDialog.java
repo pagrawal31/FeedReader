@@ -9,10 +9,14 @@ import android.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.java.rssfeed.feed.Feed;
+import com.patech.feedreader.FeedReaderApplication;
 import com.patech.feedreader.MainActivity;
 import com.patech.feedreader.R;
+
+import static com.patech.utils.AppConstants.FEED_DATA;
 
 /**
  * Created by pagrawal on 21-10-2017.
@@ -40,12 +44,23 @@ public class FeedDialog extends DialogFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(final Activity activity) {
         super.onAttach(activity);
         mHandler = (MainActivity) activity;
         LayoutInflater inflater = getActivity().getLayoutInflater();
         dialogView = inflater.inflate(R.layout.dialog_add_feed, null);
+
+        EditText urlText = (EditText) dialogView.findViewById(R.id.url);
+        urlText.setLongClickable(true);
+        urlText.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                ((FeedReaderApplication)activity.getApplication()).copyToClipboard((TextView) view, FEED_DATA);
+                return true;
+            }
+        });
     }
+
 
     public void setFeedToDisplay(Feed feed) {
         this.feed = feed;

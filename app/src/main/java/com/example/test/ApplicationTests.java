@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.java.rssfeed.FeedInfoStore;
 import com.java.rssfeed.ReadTest;
 import com.java.rssfeed.feed.Feed;
 import com.java.rssfeed.feed.FeedMessage;
@@ -47,14 +48,14 @@ public class ApplicationTests {
 					for (int filterIdx = 1; filterIdx < feedLinkInfo.length; filterIdx++) {
 						parser.addFilterString(feedLinkInfo[filterIdx], true);
 					}
-
-					Feed feed = parser.readFeed();
-					if (feed.getMessages().size() > 0) {
-						System.out.println("Feed from :" + feedLinkInfo[0]);
-					}
-					for (FeedMessage message : feed.getMessages()) {
-						System.out.println(message);
-					}
+//					Feed feed = FeedInfoStore.getInstance().getFeed(i);
+//					Feed feed = parser.readFeed();
+//					if (feed.getMessages().size() > 0) {
+//						System.out.println("Feed from :" + feedLinkInfo[0]);
+//					}
+//					for (FeedMessage message : feed.getMessages()) {
+//						System.out.println(message);
+//					}
 				} catch (Exception e) {
 					e.printStackTrace();
 					continue;

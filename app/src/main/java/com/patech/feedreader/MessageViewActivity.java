@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.patech.utils.AppConstants;
+import com.patech.utils.AppUtils;
 import com.patech.utils.CommonMsgs;
 
 import org.junit.validator.TestClassValidator;
@@ -93,7 +94,11 @@ public class MessageViewActivity extends AppCompatActivity {
 			}
 		};
 
-		titleTxtView.setText(author + " : " + title);
+		if (author == null || author.isEmpty()) {
+        } else {
+            title = Html.fromHtml(author) + " : " + title;
+        }
+		titleTxtView.setText(title);
         descriptionTxtView.setText(Html.fromHtml(description));
 		linkTxtView.setText(link);
 		dateView.setText(date);
@@ -124,11 +129,14 @@ public class MessageViewActivity extends AppCompatActivity {
 
     public void createFilter(View v) {
         TextView view = (TextView)v;
-        String txt = view.getText().toString();
-        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText(AppConstants.FILTER_DATA, txt);
-        clipboard.setPrimaryClip(clip);
-        Toast.makeText(getApplicationContext(), CommonMsgs.getTextCopied(txt), Toast.LENGTH_SHORT).show();
+        ((FeedReaderApplication) getApplication()).copyToClipboard(view, AppConstants.FILTER_DATA);
+//        AppUtils.copyToClipboard(view, AppConstants.FILTER_DATA);
+
+//        String txt = view.getText().toString();
+//        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+//        ClipData clip = ClipData.newPlainText(AppConstants.FILTER_DATA, txt);
+//        clipboard.setPrimaryClip(clip);
+//        Toast.makeText(getApplicationContext(), CommonMsgs.getTextCopied(txt), Toast.LENGTH_SHORT).show();
     }
 
 	class ImageGetterAsyncTask extends AsyncTask<TextView, Void, Bitmap> {

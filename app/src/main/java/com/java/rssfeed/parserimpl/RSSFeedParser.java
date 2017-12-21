@@ -7,7 +7,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -34,7 +36,7 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
     static final String PUB_DATE = "pubDate";
     static final String GUID = "guid";
     String currentPageData = null;
-    Feed feedInfo = null;
+    private Feed feedInfo = null;
 
     private Date currAtmostDate = null;
     private Date currDate = null;
@@ -64,6 +66,7 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
 		String author = "";
 		String pubDate = "";
 		String guid = "";
+        List<FeedMessage> localEntries = new ArrayList<>();
 
 		XmlPullParserFactory factory;
 		try {
@@ -85,7 +88,6 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
                         if (isFeedHeader) {
                             isFeedHeader = false;
                             feed = new Feed(title, link, description, language, copyright, pubDate);
-                            this.feedInfo = feed;
                         }
                         break;
                     default:
@@ -106,7 +108,7 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
                         message.setTitle(title);
                         message.setDate(pubDate);
                         if (!feedSet.contains(message)) {
-                            feed.getMessages().add(message);
+                            localEntries.add(message);
                             feedSet.add(message);
                         }
                         {
@@ -155,7 +157,7 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
 
                         if (AppUtils.compareDates(latestDate, currDate)) {
                             // no need to check feeds further.
-                            return feed;
+                            break;
                         }
                         break;
                     case COPYRIGHT:
@@ -171,13 +173,18 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+        clearExistingSet(feedSet, localEntries);
+
+        for (FeedMessage msg : AppUtils.getReverseList(localEntries)) {
+            this.feedInfo.getMessages().add(msg);
+        }
 		return feed;
-    	
     }
     @Override
-	public Feed readFeed() {
+	public void readFeed(Feed feedInfo) {
+        this.feedInfo = feedInfo;
 		read();
-		return null;
 	}
 
 	private void read() {
@@ -203,6 +210,10 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
 				if (currAtmostDate != null)
                     latestDate = currAtmostDate;
                 currAtmostDate = null;
+
+                if (latestDate != null)
+                    updateFeedDate(feedInfo, AppUtils.formatDate(latestDate));
+                updateFeedScannedDate(feedInfo, AppUtils.formatDate(new Date()));
 
 				return currUrl;
 			} catch (MalformedURLException e) {

@@ -22,6 +22,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.IBinder;
 
 public class FeedIntentService extends IntentService {
@@ -34,6 +36,8 @@ public class FeedIntentService extends IntentService {
 
 	private static final int NOTIFICATION_ID = 1;
 	private static int NOTIFICATION_COUNTER = 2;
+    private final Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+    private long[] mVibratePattern = { 0, 200, 200, 300 };
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -75,12 +79,11 @@ public class FeedIntentService extends IntentService {
             if (isUpdate && Connectivity.isConnected(getApplicationContext())) {
                 for (int i = 0; i < size; i++) {
                     try {
-                        Feed newFeed = null;
                         IPageParser parser = null;
-                        Feed feed = FeedInfoStore.getInstance().getFeedInfoList().get(i);
+                        Feed feed = FeedInfoStore.getInstance().getFeed(i);
                         try {
                             parser = ReadTest.getFeedParser(feed);
-                            newFeed = parser.readFeed();
+                            parser.readFeed(feed);
                             for (FeedMessage msg : parser.getMessages()) {
                                 if (parser.filterFeedMessage(msg)) {
                                     showNotification(feed.getLink(), msg);
@@ -129,7 +132,14 @@ public class FeedIntentService extends IntentService {
                 .setTicker(msg)
                 .setSmallIcon(android.R.drawable.arrow_up_float)
                 .setContentIntent(pIntent)
-                .setAutoCancel(true);
+                .setAutoCancel(true)
+				.setSound(alarmSound)
+                .setVibrate(mVibratePattern);
+
+//        builder.setDefaults(Notification.DEFAULT_SOUND);
+//        builder.setOnlyAlertOnce(true);
+
+
 //                .addAction(android.R.drawable.alert_light_frame, "Call", pIntent)
 //                .addAction(android.R.drawable.sym_action_chat, "More", pIntent)
 //                .addAction(android.R.drawable.sym_action_email, "And more", pIntent);

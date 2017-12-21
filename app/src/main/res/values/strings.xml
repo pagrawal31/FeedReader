@@ -17,6 +17,7 @@
     <string name="add_filter">Add Filter</string>
     <string name="show_all">Show All</string>
     <string name="show_filtered">Show Filtered</string>
+    <string name="show_excluded">Show Excluded</string>
     <string name="button_ok">OK</string>
     <string name="button_cancel">Cancel</string>
     <string name="dialog_feed_title">New Feed</string>
@@ -129,8 +130,9 @@
     <string name="subscribe_keywords_url">Keywords or Url</string>
     <string name="txt_search">Search</string>
     <string name="search_feed">Search Feeds</string>
-    <string name="lastUpdated">Last Updated</string>
     <string name="last_updated_value">Not Available</string>
     <string name="include_global_filter">Include Global Filters</string>
+    <string name="lastUpdated">Last Updated : </string>
+    <string name="lastUpdatedScan">Last Scanned : </string>
 
 </resources>

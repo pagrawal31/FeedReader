@@ -59,7 +59,8 @@ public abstract class FeedFilter implements IFeedFilter {
         if (obj == null)
             return false;
         FeedFilter otherFilter = (FeedFilter) obj;
-        return ((otherFilter.getFilterText().equals(this.filterTxt)) && (otherFilter.getFilterType() == getFilterType()));
+        return ((otherFilter.getFilterText().equalsIgnoreCase(this.getFilterText())) &&
+                (otherFilter.getFilterType() == this.getFilterType()));
     }
 
     protected abstract boolean _filterIt(FeedMessage msg);

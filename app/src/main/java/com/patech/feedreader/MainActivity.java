@@ -1,5 +1,6 @@
 package com.patech.feedreader;
 
+import com.java.rssfeed.interfaces.IFeedFilter;
 import com.patech.adapters.NavigationViewAdapter;
 import com.patech.dbhelper.DatabaseUtils;
 import com.patech.dbhelper.FeedDatabaseOpenHelper;
@@ -125,8 +126,7 @@ public class MainActivity extends AppCompatActivity implements
         });
 
 		prefs = getPreferences(MODE_PRIVATE);
-		feedIntentService = new Intent(getApplicationContext(),
-				FeedIntentService.class);
+		feedIntentService = new Intent(getApplicationContext(), FeedIntentService.class);
 		startService(feedIntentService);
 		
 		drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -197,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+        navViewAdapter.notifyDataSetChanged();
 		if (!drawer.isDrawerOpen(GravityCompat.START)) {
 			// Only show items in the action bar relevant to this screen
 			// if the drawer is not showing. Otherwise, let the drawer
@@ -322,23 +323,8 @@ public class MainActivity extends AppCompatActivity implements
             Cursor cursor = DatabaseUtils.fetchFeedFromDatabase(mReaderFeedDB, newFeed);
             cursor.moveToNext();
             if (cursor.getCount() == 0) {
-                long newRowId = DatabaseUtils.insertFeedIntoDb(mWriterFeedDB, newFeed);
-                FeedInfoStore.getInstance().addFeedIntoList(newFeed);
-
-                // adding global filters to list
-                // adding feed-filter entry into database
-                // take care of globalFilter cleanup in remove all filter case.
-                if (bIncludeGlobalFilter) {
-                    for (FeedFilter filter : FeedInfoStore.getInstance().getGlobalFilters()) {
-                        // adding global filters to list
-                        ReadTest.addFilterToFeed(newFeed, filter);
-
-                        // adding feed-filter entry into database
-                        DatabaseUtils.addFeedFilter(mWriterFeedDB, filter, newFeed);
-                    }
-                }
+                long newRowId = AppUtils.insertFeedWithGlobalFilters(mWriterFeedDB, newFeed, bIncludeGlobalFilter);
                 navViewAdapter.updateList();
-
                 if (newRowId > 0) {
                     Toast.makeText(getApplicationContext(), CommonMsgs.FEED_ADDED, Toast.LENGTH_SHORT).show();
                 }

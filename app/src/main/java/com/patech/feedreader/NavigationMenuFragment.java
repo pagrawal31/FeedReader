@@ -14,6 +14,7 @@ import com.java.rssfeed.FeedInfoStore;
 import com.java.rssfeed.feed.Feed;
 import com.patech.adapters.FeedMessageDisplayAdapter;
 import com.patech.dialog.AddFilterDialog;
+import com.patech.enums.FilterLevel;
 import com.patech.utils.AppUtils;
 import com.patech.utils.CollectionUtils;
 import com.java.rssfeed.feed.FeedMessage;
@@ -51,7 +52,7 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
 	List<FeedMessage> messageList = Collections.EMPTY_LIST;
     FeedMessageDisplayAdapter adapter;
     int idx = 0;
-	StringBuffer prefVariable = new StringBuffer();
+	StringBuffer prefVariable = new StringBuffer("int_");
 	String title = AppUtils.EMPTY;
 
     public interface NavigationMenuInterface {
@@ -97,27 +98,34 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int itemId = item.getItemId();
+        SharedPreferences.Editor editor = preferences.edit();
 		switch (itemId) {
-		case R.id.addFilter:
-            DialogFragment mDialog = AddFilterDialog.newInstance();
-            mDialog.show(getFragmentManager(), "Add Filter");
-			break;
+            case R.id.addFilter:
+                DialogFragment mDialog = AddFilterDialog.newInstance();
+                mDialog.show(getFragmentManager(), "Add Filter");
+                break;
 
-		case R.id.showAll:
-			SharedPreferences.Editor editor = preferences.edit();
-			editor.putBoolean(prefVariable.toString(), false);
-			editor.commit();
-			showMessage(false);
-			break;
+            case R.id.showAll:
 
-		case R.id.showFiltered:
-			SharedPreferences.Editor editor1 = preferences.edit();
-			editor1.putBoolean(prefVariable.toString(), true);
-			editor1.commit();
-			Toast.makeText(getActivity(), "Refreshing", Toast.LENGTH_SHORT).show();
-			showMessage(true);
-			break;
-		}
+                editor.putInt(prefVariable.toString(), FilterLevel.None.getId());
+                editor.commit();
+                showMessage(FilterLevel.None);
+                break;
+
+            case R.id.showFiltered:
+                editor.putInt(prefVariable.toString(), FilterLevel.All.getId());
+                editor.commit();
+                Toast.makeText(getActivity(), "Refreshing", Toast.LENGTH_SHORT).show();
+                showMessage(FilterLevel.All);
+                break;
+
+            case R.id.showExcluded:
+                editor.putInt(prefVariable.toString(), FilterLevel.EXCLUDED.getId());
+                editor.commit();
+                Toast.makeText(getActivity(), "Refreshing", Toast.LENGTH_SHORT).show();
+                showMessage(FilterLevel.EXCLUDED);
+                break;
+        }
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -143,19 +151,13 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
 		super.onViewCreated(view, savedInstanceState);
 	}
 	
-	public void showMessage(boolean filteredView) {
+	public void showMessage(FilterLevel level) {
 		int counter = 0;
-		Set<FeedMessage> currMsgs;
-		if (!filteredView)
-            currMsgs = ReadTest.getMessages(idx);
-		else
-            currMsgs = ReadTest.getFilteredMessages(idx);
-
+		List<FeedMessage> currMsgs = ReadTest.getMessages(idx, level);
 		listSize = currMsgs.size();
 
-
         if (listSize > 0) {
-            messageList = new ArrayList<>(currMsgs);
+            messageList = currMsgs;
             Collections.sort(messageList, new AppUtils.Compare());
         } else {
             messageList = Collections.EMPTY_LIST;
@@ -220,8 +222,8 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
-		boolean filtered = preferences.getBoolean(prefVariable.toString(), false);
-		showMessage(filtered);
+		FilterLevel filterLevel = FilterLevel.getFilterLevel(preferences.getInt(prefVariable.toString(), 0));
+		showMessage(filterLevel);
 	}
 
 	@Override

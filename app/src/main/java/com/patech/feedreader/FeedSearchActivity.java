@@ -13,7 +13,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.java.rssfeed.FeedInfoStore;
 import com.java.rssfeed.feed.Feed;
 import com.patech.adapters.FeedSearchDisplayAdapter;
 import com.patech.dbhelper.DatabaseUtils;
@@ -91,8 +90,7 @@ public class FeedSearchActivity extends AppCompatActivity implements AdapterView
         if (feedCursor.getCount() > 0) {
             Toast.makeText(getApplicationContext(), CommonMsgs.FEED_ALREADY_EXISTS, Toast.LENGTH_SHORT).show();
         } else {
-            long newRowId = DatabaseUtils.insertFeedIntoDb(writeDB, selectedFeed);
-            FeedInfoStore.getInstance().addFeedIntoList(selectedFeed);
+            long newRowId = AppUtils.insertFeedWithGlobalFilters(writeDB, selectedFeed, true);
             Toast.makeText(getApplicationContext(), CommonMsgs.FEED_ADDED, Toast.LENGTH_SHORT).show();
         }
     }
