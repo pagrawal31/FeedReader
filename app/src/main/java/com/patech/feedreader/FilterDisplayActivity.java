@@ -21,13 +21,18 @@ import com.java.rssfeed.feed.Feed;
 import com.java.rssfeed.filterimpl.ExcludeFeedFilter;
 import com.java.rssfeed.filterimpl.IncludeFeedFilter;
 import com.java.rssfeed.interfaces.IFeedFilter;
+import com.java.rssfeed.interfaces.IPageParser;
 import com.patech.adapters.FiltersDisplayAdapter;
 import com.patech.dbhelper.DatabaseUtils;
 import com.patech.dbhelper.FeedContract;
 import com.patech.utils.AppUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.patech.dbhelper.FeedContract.*;
 /**
@@ -44,7 +49,7 @@ public class FilterDisplayActivity extends AppCompatActivity implements AdapterV
 
     protected static final String POSITION = "POSITION";
     private ListView listView;
-    List<IFeedFilter> filters;
+    private List<IFeedFilter> filters = Collections.EMPTY_LIST;
     private int feedIdx = -1;
     private Feed currFeed = null;
 
@@ -61,37 +66,21 @@ public class FilterDisplayActivity extends AppCompatActivity implements AdapterV
 
         Intent i = getIntent();
         feedIdx = i.getIntExtra(POSITION, 0);
-        currFeed = FeedInfoStore.getInstance().getFeed(feedIdx);
+        IPageParser parser = null;
 
-        SQLiteDatabase db = ((FeedReaderApplication)getApplication()).getReadableDatabase();
-
-        Cursor filtersCursor = DatabaseUtils.getFilters(db, currFeed);
-        filters = new ArrayList<>();
-
-        while(filtersCursor.moveToNext()) {
-            String filterId = filtersCursor.getString(filtersCursor.getColumnIndexOrThrow(FeedContract.FeedFilterEntry.COLUMN_NAME_FILTER_ID));
-
-            Cursor filterCursor = DatabaseUtils.fetchFiltersFromFilterDb(db, filterId);
-            while(filterCursor.moveToNext()) {
-                String filterDesc = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_DESC));
-                String filterName = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_NAME));
-                String filterText = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_TEXT));
-                String filterType = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_TYPE));
-                boolean isGlobal = AppUtils.getBooleanFromInt(filterCursor.getInt((filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_GLOBAL))));
-
-                IFeedFilter filter;
-
-                if (filterType.equals(IncludeFeedFilter.FILTERTYPE)) {
-                    filter = new IncludeFeedFilter(filterText, filterName, filterDesc, isGlobal);
-                } else {
-                    filter = new ExcludeFeedFilter(filterText, filterName, filterDesc, isGlobal);
-                }
-                filters.add(filter);
-            }
-            filterCursor.close();
+        try {
+            parser = ReadTest.getFeedParser(feedIdx);
+        } catch (Exception e) {
+            parser = null;
         }
 
-        ArrayAdapter adapter = new FiltersDisplayAdapter(getApplicationContext(), filters);
+        if (parser != null) {
+            filters = new ArrayList<>(parser.getFilters());
+        }
+
+        currFeed = FeedInfoStore.getInstance().getFeed(feedIdx);
+
+        ArrayAdapter adapter = new FiltersDisplayAdapter(getApplicationContext(), new ArrayList<IFeedFilter>(filters));
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
         registerForContextMenu(listView);
@@ -124,18 +113,19 @@ public class FilterDisplayActivity extends AppCompatActivity implements AdapterV
                 // a) delete filter from filter table
                 // b) delete from feedfilter table
                 // c)
+
                 IFeedFilter currFilter = filters.get(info.position);
                 boolean isGlobal = false;
                 if (isGlobal) {
-                    ReadTest.removeFilterFromFeed(currFeed, currFilter);
-                } else {
                     ReadTest.removeFilterFromFeed(currFilter);
+                } else {
+                    ReadTest.removeFilterFromFeed(currFeed, currFilter);
                 }
                 SQLiteDatabase db = ((FeedReaderApplication)getApplication()).getWritableDatabase();
                 DatabaseUtils.deleteFilterFromFeedFilterDb(db, currFilter, currFeed, isGlobal);
 
                 filters.remove(info.position);
-                ((ArrayAdapter)listView.getAdapter()).notifyDataSetChanged();
+                ((FiltersDisplayAdapter)(listView.getAdapter())).udpateData(filters);
                 break;
             case 1:
                 // edit feed

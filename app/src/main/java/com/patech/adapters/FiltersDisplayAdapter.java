@@ -22,7 +22,7 @@ import java.util.List;
 public class FiltersDisplayAdapter extends ArrayAdapter {
 
     private final Context context;
-    private final List<? extends IFeedFilter> filters;
+    private List<? extends IFeedFilter> filters;
 
     public FiltersDisplayAdapter(Context context, List<? extends IFeedFilter> filters) {
         super(context, -1, filters);
@@ -33,6 +33,10 @@ public class FiltersDisplayAdapter extends ArrayAdapter {
     @Override
     public int getCount() {
         return filters.size();
+    }
+    public void udpateData(List<? extends IFeedFilter> newFilters) {
+        this.filters = newFilters;
+        notifyDataSetChanged();
     }
 
     @Override

@@ -31,7 +31,7 @@ public class ReadTest {
         } else if (level == FilterLevel.EXCLUDED) {
             return getFilteredMessagesExcluded(i);
         }
-        return getMessages(i);
+        return (List<FeedMessage>) getAllMessages(i);
     }
 
     public static Collection<FeedMessage> getAllMessages(int i) {
@@ -50,20 +50,6 @@ public class ReadTest {
         }
         return Collections.EMPTY_LIST;
     }
-
-	public static List<FeedMessage> getMessages(int i) {
-		IPageParser parser = null;
-        try {
-			parser = getFeedParser(i);
-		} catch (Exception e) {
-			System.out.println("Failed in getting the Info [" + e.getMessage()
-					+ "]");
-		}
-		if (parser != null) {
-            return new ArrayList<>(getAllMessages(i));
-		}
-		return Collections.EMPTY_LIST;
-	}
 
     public static List<FeedMessage> getFilteredMessagesExcluded(int i) {
         IPageParser parser = null;
@@ -121,15 +107,19 @@ public class ReadTest {
         }
     }
 
+    public static void removeAllFilter(int idx) {
+        try {
+            IPageParser parser = getFeedParser(idx);
+            parser.removeFilterAll();
+        } catch (Exception e) {
+
+        }
+    }
+
     public static void removeAllFilter() {
         int size = FeedInfoStore.getInstance().getFeedSize();
-        for (int idx = 0; idx < size; idx++ ) {
-            try {
-                IPageParser parser = getFeedParser(idx);
-                parser.removeFilterAll();
-            } catch (Exception e) {
-
-            }
+        for (int idx = 0; idx < size; idx++) {
+            removeAllFilter(idx);
         }
     }
 
@@ -172,4 +162,17 @@ public class ReadTest {
     
     private static Map<String, IPageParser> feedParserMap = new HashMap<String, IPageParser>();
 
+    public static void removeAllFeedMsgs(int idx) {
+        IPageParser parser = null;
+        Feed feed = FeedInfoStore.getInstance().getFeed(idx);
+
+        try {
+            parser = getFeedParser(idx);
+        } catch (Exception e) {
+
+        }
+        if (parser != null) {
+            parser.cleanUpFeedMsgs(feed);
+        }
+    }
 }

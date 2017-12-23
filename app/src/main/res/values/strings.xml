@@ -134,5 +134,7 @@
     <string name="include_global_filter">Include Global Filters</string>
     <string name="lastUpdated">Last Updated : </string>
     <string name="lastUpdatedScan">Last Scanned : </string>
+    <string name="clean_feed_msg">Delete All Message</string>
+    <string name="clean_feed_filter">Delete All Filters</string>
 
 </resources>

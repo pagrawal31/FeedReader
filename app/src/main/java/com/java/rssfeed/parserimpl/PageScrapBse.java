@@ -8,12 +8,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +35,7 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
     private static Date currAtmostDate = null;
     private static Date currDate = null;
     private static Feed feedInfo = null;
+    private boolean newPage = true;
 
     public PageScrapBse(String feedUrl) {
         this.feedUrl = feedUrl;
@@ -151,9 +149,8 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
                                     message.setTitle(title);
                                     message.setDate(pubDate);
 
-                                    if (!feedSet.contains(message)) {
+                                    if (!currFeedSet.contains(message)) {
                                         localEntries.add(message);
-                                        feedSet.add(message);
                                     }
 
                                     // add message to feed here.
@@ -176,13 +173,15 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
             e.printStackTrace();
         }
 
-        clearExistingSet(feedSet, localEntries);
+        clearExistingSet(currFeedSet, localEntries);
+
+//        if (newPage && this.feedInfo.getMessages().size())
 
         for (FeedMessage msg : AppUtils.getReverseList(localEntries)) {
             this.feedInfo.getMessages().add(msg);
         }
 
-        return true;
+        return localEntries.isEmpty() ?  false : true;
     }
 
     private String cleanupHtmlMarkup(String string) {
@@ -241,11 +240,6 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
 	private void read() {
        new HttpGetTask().execute(feedUrl);		
 	}
-
-	@Override
-	public Set<FeedMessage> getMessages() {
-		return feedSet;
-	}
 	
 	private class HttpGetTask extends AsyncTask<String, Void, String> {
 		
@@ -261,6 +255,7 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
 				System.setProperty("http.agent", "");
 //				feed = new Feed("Bse Corporate Filing", "http://www.bseindia.com/corporates/", null, null, null, null);
 		        String originalUrl = url[0];
+                newPage = true;
 		        while (originalUrl != null && !originalUrl.isEmpty()) {
 		            if (!originalUrl.startsWith("http")) {
 		                originalUrl ="http://www.bseindia.com/corporates/" + originalUrl;
@@ -268,6 +263,7 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
 		            String pageContent = extractWebpage(originalUrl);
 		            if (pageContent != null && !pageContent.isEmpty())
 		                originalUrl = scrapPageContent(pageContent);
+		            newPage = false;
 		        }
 		        if (currAtmostDate != null)
 		            latestDate = currAtmostDate;

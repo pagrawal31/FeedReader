@@ -1,6 +1,5 @@
 package com.patech.feedreader;
 
-import com.java.rssfeed.interfaces.IFeedFilter;
 import com.patech.adapters.NavigationViewAdapter;
 import com.patech.dbhelper.DatabaseUtils;
 import com.patech.dbhelper.FeedDatabaseOpenHelper;
@@ -21,7 +20,6 @@ import com.patech.utils.CommonMsgs;
 import com.patech.utils.AppUtils;
 
 import android.database.Cursor;
-import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.app.Dialog;
@@ -214,8 +212,7 @@ public class MainActivity extends AppCompatActivity implements
 		int id = item.getItemId();
 		switch (id) {
 		case R.id.action_settings:
-            Intent settingsActivity = new Intent(getApplicationContext(),
-                    SettingsActivity.class);
+            Intent settingsActivity = new Intent(getApplicationContext(), SettingsActivity.class);
             startActivity(settingsActivity);
 			break;
         case R.id.action_tutorial:
@@ -283,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             case 2:
                 // delete feed
-                onClickManagerFilters(info.position);
+                onClickManageFilters(info.position);
                 break;
             default:
                 break;
@@ -411,7 +408,7 @@ public class MainActivity extends AppCompatActivity implements
         return true;
     }
 
-    public boolean onClickManagerFilters(int position) {
+    public boolean onClickManageFilters(int position) {
 
         Intent showFiltersIntent = new Intent(getApplicationContext(), FilterDisplayActivity.class);
         showFiltersIntent.putExtra(FilterDisplayActivity.POSITION, position);

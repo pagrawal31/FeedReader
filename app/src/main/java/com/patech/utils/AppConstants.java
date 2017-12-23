@@ -23,4 +23,5 @@ public class AppConstants {
     public static final String DB_OR = " OR ";
 
 
+    public static final String SEARCHING_FEED = "Search Feed, Please Wait ...";
 }

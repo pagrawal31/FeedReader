@@ -47,7 +47,7 @@ public class HelloService extends Service {
 		while (true) {
             for (int i = 0; i < size; i++) {
                 try {
-                	ReadTest.getMessages(i);
+                	ReadTest.getAllMessages(i);
                 } catch (Exception e) {
                     System.out.println("Failed in getting the Info [" + e.getMessage() + "]");
                 }

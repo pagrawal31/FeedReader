@@ -8,8 +8,8 @@ android {
         applicationId "com.patech.feedreader"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 15
-        versionName "1.5"
+        versionCode 16
+        versionName "1.6"
         compileOptions {
             sourceCompatibility JavaVersion.VERSION_1_7
             targetCompatibility JavaVersion.VERSION_1_7

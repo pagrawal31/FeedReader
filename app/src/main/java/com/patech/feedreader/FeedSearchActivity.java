@@ -1,5 +1,8 @@
 package com.patech.feedreader;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -16,6 +19,7 @@ import android.widget.Toast;
 import com.java.rssfeed.feed.Feed;
 import com.patech.adapters.FeedSearchDisplayAdapter;
 import com.patech.dbhelper.DatabaseUtils;
+import com.patech.utils.AppConstants;
 import com.patech.utils.CommonMsgs;
 import com.patech.utils.AppUtils;
 
@@ -72,7 +76,7 @@ public class FeedSearchActivity extends AppCompatActivity implements AdapterView
 
         String urlText = queryText.getText().toString();
         if (urlText != null && urlText.length() > 2 ) {
-            OkHttpHandler executor = new OkHttpHandler();
+            OkHttpHandler executor = new OkHttpHandler(FeedSearchActivity.this);
             executor.execute(urlText);
         } else {
             Toast.makeText(getApplicationContext(), CommonMsgs.ENTER_VALID_TEXT_TO_SEARCH, Toast.LENGTH_SHORT).show();;
@@ -99,6 +103,18 @@ public class FeedSearchActivity extends AppCompatActivity implements AdapterView
 
         private static final String TAG = "HttpGet";
         OkHttpClient client = new OkHttpClient();
+        private ProgressDialog dialog;
+        private Context context;
+
+        public OkHttpHandler(Activity activity) {
+            context = activity;
+            dialog = new ProgressDialog(context);
+        }
+
+        protected void onPreExecute() {
+            this.dialog.setMessage(AppConstants.SEARCHING_FEED);
+            this.dialog.show();
+        }
 
         @Override
         protected String doInBackground(String... url) {
@@ -143,7 +159,10 @@ public class FeedSearchActivity extends AppCompatActivity implements AdapterView
 
         @Override
         protected void onPostExecute(String url) {
-            adapter.updateList(feeds);
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+                adapter.updateList(feeds);
+            }
         }
     }
 
@@ -185,6 +204,4 @@ public class FeedSearchActivity extends AppCompatActivity implements AdapterView
         }
         return null;
     }
-
-
 }

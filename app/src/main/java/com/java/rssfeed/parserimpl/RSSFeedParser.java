@@ -5,12 +5,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -107,9 +104,8 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
                         message.setLink(link);
                         message.setTitle(title);
                         message.setDate(pubDate);
-                        if (!feedSet.contains(message)) {
+                        if (!currFeedSet.contains(message)) {
                             localEntries.add(message);
-                            feedSet.add(message);
                         }
                         {
                             description = "";
@@ -174,13 +170,14 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
 			e.printStackTrace();
 		}
 
-        clearExistingSet(feedSet, localEntries);
+        clearExistingSet(currFeedSet, localEntries);
 
         for (FeedMessage msg : AppUtils.getReverseList(localEntries)) {
             this.feedInfo.getMessages().add(msg);
         }
 		return feed;
     }
+
     @Override
 	public void readFeed(Feed feedInfo) {
         this.feedInfo = feedInfo;
@@ -230,11 +227,6 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
 		protected void onPostExecute(String url) {
 			FeedInfoStore.releseHandle(url);
 		}
-	}
-
-	@Override
-	public Set<FeedMessage> getMessages() {
-		return feedSet;
 	}
 
 	@Override

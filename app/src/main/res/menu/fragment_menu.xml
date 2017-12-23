@@ -26,6 +26,18 @@
         android:orderInCategory="200"
         android:title="@string/show_all"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/cleanFeedMsg"
+        android:orderInCategory="200"
+        android:title="@string/clean_feed_msg"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/cleanFeedFilter"
+        android:orderInCategory="200"
+        android:title="@string/clean_feed_filter"
+        app:showAsAction="never"/>
     
 
 </menu>

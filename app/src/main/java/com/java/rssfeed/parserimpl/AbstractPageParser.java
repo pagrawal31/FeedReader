@@ -6,11 +6,8 @@ import com.java.rssfeed.filterimpl.ExcludeFeedFilter;
 import com.java.rssfeed.filterimpl.IncludeFeedFilter;
 import com.java.rssfeed.interfaces.IFeedFilter;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,11 +15,16 @@ import java.util.Set;
 public class AbstractPageParser {
 	
 	public Set<IFeedFilter> filters;
-	public Set<FeedMessage> feedSet;
+
+	// currFeedSet contents the msgs for previous parsing so that the duplicate elements can be checked.
+	protected Set<FeedMessage> currFeedSet;
     
 	public AbstractPageParser() {
         this.filters = new HashSet<>();
-        this.feedSet = new LinkedHashSet<>();
+        this.currFeedSet = new HashSet<>();
+    }
+    public Set<IFeedFilter> getFilters() {
+	    return filters;
     }
 
     public boolean filterFeedMessageExcluded(FeedMessage message) {
@@ -88,6 +90,11 @@ public class AbstractPageParser {
 
     public void removeFilter(IFeedFilter filter) {
         filters.remove(filter);
+    }
+
+    public void cleanUpFeedMsgs(Feed feedInfo) {
+	    currFeedSet.clear();
+        feedInfo.deleteAllMsgs();
     }
 
     public void removeFilterAll() {

@@ -84,7 +84,7 @@ public class FeedIntentService extends IntentService {
                         try {
                             parser = ReadTest.getFeedParser(feed);
                             parser.readFeed(feed);
-                            for (FeedMessage msg : parser.getMessages()) {
+                            for (FeedMessage msg : feed.getMessages()) {
                                 if (parser.filterFeedMessage(msg)) {
                                     showNotification(feed.getLink(), msg);
                                 }

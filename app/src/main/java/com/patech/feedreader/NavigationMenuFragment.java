@@ -1,14 +1,9 @@
 package com.patech.feedreader;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import com.java.rssfeed.FeedInfoStore;
 import com.java.rssfeed.feed.Feed;
@@ -19,7 +14,6 @@ import com.patech.utils.AppUtils;
 import com.patech.utils.CollectionUtils;
 import com.java.rssfeed.feed.FeedMessage;
 import com.java.rssfeed.ReadTest;
-import com.patech.utils.CommonMsgs;
 
 import android.app.DialogFragment;
 import android.app.ListFragment;
@@ -56,7 +50,7 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
 	String title = AppUtils.EMPTY;
 
     public interface NavigationMenuInterface {
-        public boolean onClickManagerFilters(int position);
+        public boolean onClickManageFilters(int position);
     }
 
 	public static NavigationMenuFragment newInstance(int position) {
@@ -106,7 +100,6 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
                 break;
 
             case R.id.showAll:
-
                 editor.putInt(prefVariable.toString(), FilterLevel.None.getId());
                 editor.commit();
                 showMessage(FilterLevel.None);
@@ -124,6 +117,12 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
                 editor.commit();
                 Toast.makeText(getActivity(), "Refreshing", Toast.LENGTH_SHORT).show();
                 showMessage(FilterLevel.EXCLUDED);
+                break;
+            case R.id.cleanFeedMsg:
+                ReadTest.removeAllFeedMsgs(idx);
+                break;
+            case R.id.cleanFeedFilter:
+                ReadTest.removeAllFilter(idx);
                 break;
         }
 		return super.onOptionsItemSelected(item);
@@ -194,7 +193,7 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
                 // edit
                 break;
             case 2:
-                mCallback.onClickManagerFilters(info.position);
+                mCallback.onClickManageFilters(info.position);
                 break;
             default:
         }

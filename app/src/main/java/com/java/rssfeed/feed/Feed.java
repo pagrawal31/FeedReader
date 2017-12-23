@@ -158,4 +158,8 @@ public class Feed {
         return true;
     }
 
+    public void deleteAllMsgs() {
+        entries.clear();
+    }
+
 }
