@@ -27,6 +27,7 @@ android {
 
 dependencies {
     compile files('libs/jsoup-1.8.3.jar')
+    compile 'net.sf.kxml:kxml2:2.3.0+'
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'junit:junit:4.12'
     compile 'com.android.support:design:26.+'
@@ -34,6 +35,11 @@ dependencies {
     compile 'com.android.support:support-v4:26.+'
     compile 'com.android.support:support-vector-drawable:26.+'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'com.google.guava:guava:23.6-android'
+    compileOnly "org.projectlombok:lombok:1.16.18"
     implementation 'com.jakewharton:butterknife:8.5.1'
+
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+    annotationProcessor "org.projectlombok:lombok:1.16.18"
+    runtimeOnly 'net.sf.kxml:kxml2:2.3.0+'
 }
