@@ -93,7 +93,6 @@ public class AbstractPageParser {
     }
 
     public void cleanUpFeedMsgs(Feed feedInfo) {
-	    currFeedSet.clear();
         feedInfo.deleteAllMsgs();
     }
 

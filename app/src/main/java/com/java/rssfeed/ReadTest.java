@@ -162,6 +162,12 @@ public class ReadTest {
     
     private static Map<String, IPageParser> feedParserMap = new HashMap<String, IPageParser>();
 
+    public static void removeAllFeedMsgs() {
+        for (int idx = 0; idx < FeedInfoStore.getInstance().getFeedSize(); idx++) {
+            removeAllFeedMsgs(idx);
+        }
+    }
+
     public static void removeAllFeedMsgs(int idx) {
         IPageParser parser = null;
         Feed feed = FeedInfoStore.getInstance().getFeed(idx);

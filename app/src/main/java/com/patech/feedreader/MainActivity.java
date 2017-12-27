@@ -20,6 +20,7 @@ import com.patech.utils.CommonMsgs;
 import com.patech.utils.AppUtils;
 
 import android.database.Cursor;
+import android.support.annotation.RequiresPermission;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.app.Dialog;
@@ -51,6 +52,10 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class MainActivity extends AppCompatActivity implements
         FeedDialog.FeedDialogInterface, AdapterView.OnItemClickListener,
         AddFilterDialog.AddFilterInterface, NavigationView.OnNavigationItemSelectedListener,
@@ -64,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements
 	 * Fragment managing the behaviors, interactions and presentation of the
 	 * navigation drawer.
 	 */
-    private NavigationView navigationView;
+
 	SharedPreferences prefs;
 
 	/**
@@ -72,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements
 	 * {@link #restoreActionBar()}.
 	 */
 	private CharSequence mTitle;
-	private DrawerLayout drawer;
+
 	Intent feedIntentService = null;
 	private int currPosition = 0;
 
@@ -81,97 +86,33 @@ public class MainActivity extends AppCompatActivity implements
     private SQLiteDatabase mReaderFeedDB = null;
     private Map<String, Integer> infoStoreMap;
 
-    private ListView mNavListView;
+
     private NavigationViewAdapter navViewAdapter;
     private SharedPreferences sharedPreferences;
+    private ActionBarDrawerToggle toggle;
 
-	@Override
+    @BindView(R.id.imageView) ImageView headerImageView;
+    @BindView(R.id.nav_items_list) ListView mNavListView;
+    @BindView(R.id.fab) FloatingActionButton fab;
+    @BindView(R.id.drawer_layout) DrawerLayout drawer;
+    @BindView(R.id.nav_view) NavigationView navigationView;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        initDB();
+        ButterKnife.bind(this);
 
+        setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.app_name);
         sharedPreferences = ((FeedReaderApplication)getApplication()).getSharedPreferences();
+        prefs = getPreferences(MODE_PRIVATE);
 
+        initDB();
         firstTimeInit();
-
-        ImageView headerImageView = (ImageView) findViewById(R.id.imageView);
-        headerImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(mainIntent);
-            }
-        });
-        infoStoreMap = new HashMap<>();
-        mNavListView = (ListView) findViewById(R.id.nav_items_list);
-        navViewAdapter = new NavigationViewAdapter(this);
-        mNavListView.setAdapter(navViewAdapter);
-        mNavListView.setOnItemClickListener(this);
-        registerForContextMenu(mNavListView);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DialogFragment mDialog = FeedDialog.newInstance();
-                mDialog.show(getFragmentManager(), "Add Feed");
-
-            }
-        });
-
-		prefs = getPreferences(MODE_PRIVATE);
-		feedIntentService = new Intent(getApplicationContext(), FeedIntentService.class);
-		startService(feedIntentService);
-		
-		drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        initUI();
 	}
-
-    private void firstTimeInit() {
-
-	    // Check if we need to display our OnboardingFragment
-        if (!sharedPreferences.getBoolean(
-                AppConstants.FIRST_TIME_LAUNCH, false)) {
-
-            boolean isMobile = Connectivity.isConnectedMobile(getApplicationContext());
-
-            SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-            sharedPreferencesEditor.putBoolean(AppConstants.FIRST_TIME_LAUNCH, true);
-            if (!isMobile) {
-                sharedPreferencesEditor.putBoolean(AppConstants.WIFI_ONLY, true);
-            }
-            getApp().setUpdateOnWifiOnly(!isMobile);
-            sharedPreferencesEditor.apply();
-        } else {
-            boolean isWifiOnly = sharedPreferences.getBoolean(AppConstants.WIFI_ONLY, false);
-            getApp().setUpdateOnWifiOnly(isWifiOnly);
-        }
-    }
-
-    private void initDB() {
-//        // Get the underlying database for writing
-        mReaderFeedDB = ((FeedReaderApplication)getApplication()).getReadableDatabase();
-        mWriterFeedDB = ((FeedReaderApplication)getApplication()).getWritableDatabase();
-    }
-
-    public SQLiteDatabase getReadableDatabase() {
-        return mReaderFeedDB;
-    }
-
-    public SQLiteDatabase getWritableDatabase() {
-        return mWriterFeedDB;
-    }
 
 	private void displaySelectedScreen(int position) {
         currPosition = position;
@@ -180,9 +121,9 @@ public class MainActivity extends AppCompatActivity implements
 
 		// update the main content by replacing fragments
 		FragmentManager fragmentManager = getFragmentManager();
-		fragmentManager
-				.beginTransaction()
-				.replace(R.id.container, fragment).commit();
+        fragmentManager
+                .beginTransaction()
+                .replace(R.id.container, fragment).commit();
 
 	}
 
@@ -237,7 +178,10 @@ public class MainActivity extends AppCompatActivity implements
             Intent feedSearchIntent = new Intent(getApplicationContext(), FeedSearchActivity.class);
             startActivity(feedSearchIntent);
             break;
-		}
+        case R.id.cleanFeedMsg:
+            ReadTest.removeAllFeedMsgs();
+            break;
+        }
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -443,4 +387,73 @@ public class MainActivity extends AppCompatActivity implements
     public FeedReaderApplication getApp() {
         return (FeedReaderApplication)getApplication();
     }
+
+
+    private void initUI() {
+        infoStoreMap = new HashMap<>();
+        feedIntentService = new Intent(getApplicationContext(), FeedIntentService.class);
+        startService(feedIntentService);
+
+        initNavigationView();
+    }
+
+    private void initNavigationView() {
+        navViewAdapter = new NavigationViewAdapter(this);
+        mNavListView.setAdapter(navViewAdapter);
+        mNavListView.setOnItemClickListener(this);
+        registerForContextMenu(mNavListView);
+
+        toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    @OnClick(R.id.fab)
+    void showAddNewFeedDialog(View view) {
+        DialogFragment mDialog = FeedDialog.newInstance();
+        mDialog.show(getFragmentManager(), "Add Feed");
+    }
+
+    @OnClick(R.id.imageView)
+    void showMainActivity(View view) {
+        Intent mainIntent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(mainIntent);
+    }
+
+    private void firstTimeInit() {
+
+        // Check if we need to display our OnboardingFragment
+        if (!sharedPreferences.getBoolean(
+                AppConstants.FIRST_TIME_LAUNCH, false)) {
+
+            boolean isMobile = Connectivity.isConnectedMobile(getApplicationContext());
+
+            SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+            sharedPreferencesEditor.putBoolean(AppConstants.FIRST_TIME_LAUNCH, true);
+            if (!isMobile) {
+                sharedPreferencesEditor.putBoolean(AppConstants.WIFI_ONLY, true);
+            }
+            getApp().setUpdateOnWifiOnly(!isMobile);
+            sharedPreferencesEditor.apply();
+        } else {
+            boolean isWifiOnly = sharedPreferences.getBoolean(AppConstants.WIFI_ONLY, false);
+            getApp().setUpdateOnWifiOnly(isWifiOnly);
+        }
+    }
+
+    private void initDB() {
+//        // Get the underlying database for writing
+        mReaderFeedDB = ((FeedReaderApplication)getApplication()).getReadableDatabase();
+        mWriterFeedDB = ((FeedReaderApplication)getApplication()).getWritableDatabase();
+    }
+
+    public SQLiteDatabase getReadableDatabase() {
+        return mReaderFeedDB;
+    }
+
+    public SQLiteDatabase getWritableDatabase() {
+        return mWriterFeedDB;
+    }
+
 }

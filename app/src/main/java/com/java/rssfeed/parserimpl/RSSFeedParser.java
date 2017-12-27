@@ -75,7 +75,7 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
             int eventType = parser.getEventType();
 
             String text = "";
-            while (eventType != XmlPullParser.END_DOCUMENT) {
+            outloop: while (eventType != XmlPullParser.END_DOCUMENT) {
 
                 String tagName = parser.getName();
                 switch (eventType) {
@@ -153,7 +153,7 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
 
                         if (AppUtils.compareDates(latestDate, currDate)) {
                             // no need to check feeds further.
-                            break;
+                            break outloop;
                         }
                         break;
                     case COPYRIGHT:
