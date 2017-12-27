@@ -1,6 +1,5 @@
 package com.patech.imexport.opml;
 
-import org.jsoup.helper.StringUtil;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -27,6 +26,8 @@ public class OpmlParser {
     private static final String RFC822_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss Z";
 
     public static List<Outline> read(File opmlFile) {
+        List<Outline> outlineList = new ArrayList<>();
+
         try {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             XmlPullParser parser = factory.newPullParser();
@@ -60,12 +61,12 @@ public class OpmlParser {
 
                             case "outline":
                                 if (parsingOutline) {
+                                    nestedOutline = true;
+                                } else {
                                     if (subscriptionList == null) {
                                         subscriptionList = new ArrayList<>();
                                     }
 
-                                    nestedOutline = true;
-                                } else {
                                     outline = new Outline();
                                     parsingOutline = true;
                                 }
@@ -153,19 +154,24 @@ public class OpmlParser {
                                     subscription.setXmlUrl((String)attributes.get("language"));
                                 }
 
+                                subscriptionList.add(subscription);
+
                                 if (nestedOutline) {
-                                    subscriptionList.add(subscription);
                                     nestedOutline = false;
                                 } else {
                                     outline.setSubscriptions(subscriptionList);
                                     subscription = null;
                                     subscriptionList = null;
                                     parsingOutline = false;
-
+                                    outlineList.add(outline);
                                 }
                         }
                         attributes.clear();
 
+                        break;
+
+                    case "opml":
+                        opml.setOutlines(outlineList);
                         break;
 
                     default:
@@ -186,10 +192,10 @@ public class OpmlParser {
             System.out.println("Exception: " + exception.getMessage());
         }
 
-        return new ArrayList<>();
+        return outlineList;
     }
 
-    public static void write(List<Outline> outlines, File outputFile) {
+    public static void write(List<Outline> outlines, File outputFile) throws FileNotFoundException {
     }
 
     private static Date getDate (String rfd822Date) throws ParseException {
