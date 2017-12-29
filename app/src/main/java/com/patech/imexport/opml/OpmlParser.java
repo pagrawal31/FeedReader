@@ -165,13 +165,14 @@ public class OpmlParser {
                                     parsingOutline = false;
                                     outlineList.add(outline);
                                 }
+                                break;
+
+                            case "opml":
+                                opml.setOutlines(outlineList);
+                                break;
                         }
                         attributes.clear();
 
-                        break;
-
-                    case "opml":
-                        opml.setOutlines(outlineList);
                         break;
 
                     default:
