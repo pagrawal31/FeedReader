@@ -16,7 +16,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.java.rssfeed.feed.Feed;
+import com.java.rssfeed.model.feed.Feed;
 import com.patech.adapters.FeedSearchDisplayAdapter;
 import com.patech.dbhelper.DatabaseUtils;
 import com.patech.utils.AppConstants;
@@ -185,7 +185,7 @@ public class FeedSearchActivity extends AppCompatActivity implements AdapterView
                             feedBuilder.setDescription(tagValue);
                             break;
                         case "title":
-                            feedBuilder.setTitle(tagValue);
+                            feedBuilder.setName(tagValue);
                             break;
                         case "feedId":
                             currUrl = tagValue;

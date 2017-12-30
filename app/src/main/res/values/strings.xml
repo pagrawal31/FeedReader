@@ -136,5 +136,7 @@
     <string name="lastUpdatedScan">Last Scanned : </string>
     <string name="clean_feed_msg">Delete All Message</string>
     <string name="clean_feed_filter">Delete All Filters</string>
+    <string name="timestamp">Message Time</string>
+    <string name="feed_title">Feed Title</string>
 
 </resources>

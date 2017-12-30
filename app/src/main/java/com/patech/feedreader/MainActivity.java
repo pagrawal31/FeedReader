@@ -10,7 +10,7 @@ import com.patech.location.Connectivity;
 import com.patech.services.FeedIntentService;
 import com.java.rssfeed.FeedInfoStore;
 import com.java.rssfeed.ReadTest;
-import com.java.rssfeed.feed.Feed;
+import com.java.rssfeed.model.feed.Feed;
 import com.java.rssfeed.filterimpl.ExcludeFeedFilter;
 import com.java.rssfeed.filterimpl.FeedFilter;
 import com.java.rssfeed.filterimpl.IncludeFeedFilter;
@@ -20,7 +20,6 @@ import com.patech.utils.CommonMsgs;
 import com.patech.utils.AppUtils;
 
 import android.database.Cursor;
-import android.support.annotation.RequiresPermission;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.app.Dialog;
@@ -178,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements
             Intent feedSearchIntent = new Intent(getApplicationContext(), FeedSearchActivity.class);
             startActivity(feedSearchIntent);
             break;
-        case R.id.cleanFeedMsg:
+        case R.id.cleanAllFeedMsg:
             ReadTest.removeAllFeedMsgs();
             break;
         }
@@ -259,7 +258,8 @@ public class MainActivity extends AppCompatActivity implements
 
         if (validInput(nameVal, summaryVal, urlVal)) {
             // Insert the new row, returning the primary key value of the new row
-            Feed newFeed = new Feed(nameVal, urlVal, summaryVal, null, null, null);
+            Feed.FeedBuilder builder = new Feed.FeedBuilder();
+            Feed newFeed = builder.setName(nameVal).setDescription(summaryVal).build(urlVal);
 
             Cursor cursor = DatabaseUtils.fetchFeedFromDatabase(mReaderFeedDB, newFeed);
             cursor.moveToNext();

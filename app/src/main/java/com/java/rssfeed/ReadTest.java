@@ -5,16 +5,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import com.java.rssfeed.feed.Feed;
-import com.java.rssfeed.feed.FeedMessage;
-import com.java.rssfeed.filterimpl.ExcludeFeedFilter;
-import com.java.rssfeed.filterimpl.FeedFilter;
+import com.java.rssfeed.model.feed.Feed;
+import com.java.rssfeed.model.feed.FeedMessage;
 import com.java.rssfeed.interfaces.IFeedFilter;
 import com.java.rssfeed.interfaces.IPageParser;
 import com.java.rssfeed.parserimpl.PageScrapBse;

@@ -1,8 +1,6 @@
 package com.java.rssfeed.interfaces;
 
-import com.java.rssfeed.feed.FeedMessage;
-
-import java.util.logging.Filter;
+import com.java.rssfeed.model.feed.FeedMessage;
 
 public interface IFeedFilter {
     // allow based on filter or disallow ?

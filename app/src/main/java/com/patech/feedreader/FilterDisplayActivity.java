@@ -1,7 +1,6 @@
 package com.patech.feedreader;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,24 +16,16 @@ import android.widget.ListView;
 
 import com.java.rssfeed.FeedInfoStore;
 import com.java.rssfeed.ReadTest;
-import com.java.rssfeed.feed.Feed;
-import com.java.rssfeed.filterimpl.ExcludeFeedFilter;
-import com.java.rssfeed.filterimpl.IncludeFeedFilter;
+import com.java.rssfeed.model.feed.Feed;
 import com.java.rssfeed.interfaces.IFeedFilter;
 import com.java.rssfeed.interfaces.IPageParser;
 import com.patech.adapters.FiltersDisplayAdapter;
 import com.patech.dbhelper.DatabaseUtils;
-import com.patech.dbhelper.FeedContract;
-import com.patech.utils.AppUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
-import com.patech.dbhelper.FeedContract.*;
 /**
  * Created by pagrawal on 17-11-2017.
  */

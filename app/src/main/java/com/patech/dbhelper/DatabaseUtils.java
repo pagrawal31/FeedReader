@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.java.rssfeed.interfaces.IFeedFilter;
 import com.patech.utils.AppUtils;
-import com.java.rssfeed.feed.Feed;
+import com.java.rssfeed.model.feed.Feed;
 import com.patech.dbhelper.FeedContract.*;
 
 /**
@@ -85,7 +85,7 @@ public class DatabaseUtils {
 
     public static long insertFeedIntoDb(SQLiteDatabase db, Feed feed) {
         ContentValues values = new ContentValues();
-        values.put(FeedContract.FeedEntry.COLUMN_NAME_TITLE, feed.getTitle());
+        values.put(FeedContract.FeedEntry.COLUMN_NAME_TITLE, feed.getName());
         values.put(FeedContract.FeedEntry.COLUMN_NAME_DESC, feed.getDescription());
         values.put(FeedContract.FeedEntry.COLUMN_NAME_URL, feed.getLink());
 

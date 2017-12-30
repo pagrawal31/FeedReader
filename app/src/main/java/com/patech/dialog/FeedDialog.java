@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.java.rssfeed.feed.Feed;
+import com.java.rssfeed.model.feed.Feed;
 import com.patech.feedreader.FeedReaderApplication;
 import com.patech.feedreader.MainActivity;
 import com.patech.feedreader.R;
@@ -76,7 +76,7 @@ public class FeedDialog extends DialogFragment {
             EditText summaryText = (EditText) dialogView.findViewById(R.id.filterText);
             EditText urlText = (EditText) dialogView.findViewById(R.id.url);
 
-            nameText.setText(this.feed.getTitle());
+            nameText.setText(this.feed.getName());
             summaryText.setText(this.feed.getDescription());
             urlText.setText(this.feed.getLink());
             urlText.setEnabled(false);

@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.java.rssfeed.ReadTest;
 import com.java.rssfeed.filterimpl.ExcludeFeedFilter;
-import com.java.rssfeed.filterimpl.FeedFilter;
 import com.java.rssfeed.filterimpl.IncludeFeedFilter;
 import com.java.rssfeed.interfaces.IFeedFilter;
 import com.patech.dbhelper.DatabaseUtils;
@@ -19,7 +18,7 @@ import com.patech.dbhelper.FeedContract.*;
 import com.patech.feedreader.MainActivity;
 import com.patech.feedreader.R;
 import com.java.rssfeed.FeedInfoStore;
-import com.java.rssfeed.feed.Feed;
+import com.java.rssfeed.model.feed.Feed;
 import com.patech.utils.AppUtils;
 
 import java.util.ArrayList;
@@ -58,7 +57,7 @@ public class NavigationViewAdapter extends BaseAdapter {
             String desc = feedCursor.getString(feedCursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_DESC));
             String title = feedCursor.getString(feedCursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_TITLE));
             String url = feedCursor.getString(feedCursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_URL));
-            Feed newFeed = new Feed.FeedBuilder().setTitle(title).setDescription(desc).build(url);
+            Feed newFeed = new Feed.FeedBuilder().setName(title).setDescription(desc).build(url);
 
             FeedInfoStore.getInstance().addFeedIntoList(newFeed);
 
@@ -156,7 +155,7 @@ public class NavigationViewAdapter extends BaseAdapter {
         //
 
         Feed feed = menus.get(position);
-        String title = feed.getTitle();
+        String title = feed.getName();
         String summary = feed.getDescription();
         String lastUpdatedVal = feed.getLastUpdated();
         String lastScannedDate = feed.getLastScanned();

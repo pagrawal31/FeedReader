@@ -8,9 +8,9 @@ import com.patech.feedreader.FeedReaderApplication;
 import com.patech.feedreader.MainActivity;
 import com.patech.feedreader.MessageViewActivity;
 import com.patech.feedreader.R;
-import com.java.rssfeed.feed.Feed;
+import com.java.rssfeed.model.feed.Feed;
 import com.java.rssfeed.FeedInfoStore;
-import com.java.rssfeed.feed.FeedMessage;
+import com.java.rssfeed.model.feed.FeedMessage;
 import com.java.rssfeed.ReadTest;
 import com.java.rssfeed.interfaces.IPageParser;
 import com.patech.location.Connectivity;
@@ -86,6 +86,7 @@ public class FeedIntentService extends IntentService {
                             parser.readFeed(feed);
                             for (FeedMessage msg : feed.getMessages()) {
                                 if (parser.filterFeedMessage(msg)) {
+                                	msg.setFavorite(true);
                                     showNotification(feed.getLink(), msg);
                                 }
                             }

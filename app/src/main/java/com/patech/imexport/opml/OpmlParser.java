@@ -1,5 +1,9 @@
 package com.patech.imexport.opml;
 
+import com.java.rssfeed.model.feed.Feed;
+import com.java.rssfeed.model.feed.OPML;
+import com.java.rssfeed.model.feed.Outline;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -42,8 +46,9 @@ public class OpmlParser {
             Map<String, Object> attributes = new HashMap<>();
             Boolean parsingOutline = false;
             Boolean nestedOutline = false;
-            Subscription subscription = null;
-            List<Subscription> subscriptionList = null;
+            Feed feed = null;
+            Feed.FeedBuilder feedBuilder = null;
+            List<Feed> subscriptionList = null;
 
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 switch (eventType) {
@@ -71,7 +76,8 @@ public class OpmlParser {
                                     parsingOutline = true;
                                 }
 
-                                subscription = new Subscription();
+                                feed = null;
+                                feedBuilder = new Feed.FeedBuilder();
                                 break;
                         }
                         break;
@@ -119,11 +125,11 @@ public class OpmlParser {
                                         outline.setText(outlineText);
                                     }
 
-                                    subscription.setText(outlineText);
+                                    feedBuilder.setName(outlineText);
                                 }
 
                                 if (attributes.containsKey("type")) {
-                                    subscription.setType((String)attributes.get("type"));
+                                    feedBuilder.setType((String)attributes.get("type"));
                                 }
 
                                 if (attributes.containsKey("created")) {
@@ -134,36 +140,38 @@ public class OpmlParser {
                                     outline.setCategory((String)attributes.get("category"));
                                 }
 
-                                if (attributes.containsKey("xmlUrl")) {
-                                    subscription.setXmlUrl((String)attributes.get("xmlUrl"));
-                                }
-
                                 if (attributes.containsKey("htmlUrl")) {
-                                    subscription.setHtmlUrl((String)attributes.get("htmlUrl"));
+                                    feedBuilder.setHtmlUrl((String)attributes.get("htmlUrl"));
                                 }
 
                                 if (attributes.containsKey("description")) {
-                                    subscription.setDescription((String)attributes.get("description"));
+                                    feedBuilder.setDescription((String)attributes.get("description"));
                                 }
 
                                 if (attributes.containsKey("title")) {
-                                    subscription.setTitle((String)attributes.get("title"));
+                                    feedBuilder.setName((String)attributes.get("title"));
                                 }
 
                                 if (attributes.containsKey("language")) {
-                                    subscription.setXmlUrl((String)attributes.get("language"));
+                                    feedBuilder.setLanguage((String)attributes.get("language"));
                                 }
 
-                                subscriptionList.add(subscription);
+                                if (attributes.containsKey("xmlUrl")) {
+                                    feed = feedBuilder.build((String)attributes.get("xmlUrl"));
+                                }
+                                if (feed != null && subscriptionList != null)
+                                    subscriptionList.add(feed);
 
                                 if (nestedOutline) {
                                     nestedOutline = false;
                                 } else {
-                                    outline.setSubscriptions(subscriptionList);
-                                    subscription = null;
-                                    subscriptionList = null;
-                                    parsingOutline = false;
-                                    outlineList.add(outline);
+                                    if (subscriptionList != null) {
+                                        outline.setSubscriptions(subscriptionList);
+                                        feed = null;
+                                        subscriptionList = null;
+                                        parsingOutline = false;
+                                        outlineList.add(outline);
+                                    }
                                 }
                                 break;
 
@@ -178,18 +186,10 @@ public class OpmlParser {
                     default:
                 }
 
-                System.out.println(eventType);
+//                System.out.println(eventType);
                 eventType = parser.next();
             }
-        } catch (ParseException exception) {
-            System.out.println("Exception: " + exception.getMessage());
-        } catch (XmlPullParserException exception) {
-            System.out.println("Exception: " + exception.getMessage());
-        } catch (FileNotFoundException exception) {
-            System.out.println("Exception: " + exception.getMessage());
-        } catch (IOException exception) {
-            System.out.println("Exception: " + exception.getMessage());
-        } catch (RuntimeException exception) {
+        } catch (ParseException | XmlPullParserException | RuntimeException  | IOException exception) {
             System.out.println("Exception: " + exception.getMessage());
         }
 

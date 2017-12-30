@@ -1,9 +1,5 @@
-package com.java.rssfeed.feed;
+package com.java.rssfeed.model.feed;
 
-import com.patech.utils.AppUtils;
-
-import java.util.Comparator;
-import java.util.Date;
 import java.util.zip.CRC32;
 
 import static com.patech.utils.AppUtils.EMPTY;
@@ -17,6 +13,7 @@ public class FeedMessage // implements Comparator
     private String guid = EMPTY;
     private String date = EMPTY;
     private int crc32 = -1;
+    private boolean isFavorite = false;
     
     public String getTitle() {
         return title;
@@ -124,4 +121,11 @@ public class FeedMessage // implements Comparator
         return false;
     }
 
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
 }

@@ -13,9 +13,9 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import com.java.rssfeed.feed.Feed;
+import com.java.rssfeed.model.feed.Feed;
 import com.java.rssfeed.FeedInfoStore;
-import com.java.rssfeed.feed.FeedMessage;
+import com.java.rssfeed.model.feed.FeedMessage;
 import com.java.rssfeed.interfaces.IPageParser;
 import com.patech.utils.AppUtils;
 
@@ -84,7 +84,13 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
                     case ITEM:
                         if (isFeedHeader) {
                             isFeedHeader = false;
-                            feed = new Feed(title, link, description, language, copyright, pubDate);
+                            Feed.FeedBuilder builder = new Feed.FeedBuilder();
+                            feed = builder.setName(title)
+                                    .setDescription(description)
+                                    .setLanguage(language)
+                                    .setCopyright(copyright)
+                                    .setPubDate(pubDate)
+                                    .build(link);
                         }
                         break;
                     default:

@@ -1,7 +1,6 @@
 package com.java.rssfeed.filterimpl;
 
-import com.java.rssfeed.feed.FeedMessage;
-import com.java.rssfeed.filterimpl.FeedFilter;
+import com.java.rssfeed.model.feed.FeedMessage;
 
 /**
  * Created by pagrawal on 21-10-2017.

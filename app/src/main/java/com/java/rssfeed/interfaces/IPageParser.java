@@ -2,8 +2,8 @@ package com.java.rssfeed.interfaces;
 
 import java.util.Set;
 
-import com.java.rssfeed.feed.Feed;
-import com.java.rssfeed.feed.FeedMessage;
+import com.java.rssfeed.model.feed.Feed;
+import com.java.rssfeed.model.feed.FeedMessage;
 
 public interface IPageParser {
 

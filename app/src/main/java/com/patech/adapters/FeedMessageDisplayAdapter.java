@@ -6,12 +6,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.patech.feedreader.R;
-import com.java.rssfeed.feed.FeedMessage;
+import com.java.rssfeed.model.feed.FeedMessage;
 
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by pagrawal on 28-10-2017.
@@ -21,10 +27,12 @@ public class FeedMessageDisplayAdapter extends ArrayAdapter<FeedMessage> {
 
     private final Context context;
     private List<FeedMessage> values;
+    LayoutInflater inflater;
 
     public FeedMessageDisplayAdapter(Context context, List<FeedMessage> values) {
         super(context, -1, values);
         this.context = context;
+        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.values = values;
     }
 
@@ -34,26 +42,46 @@ public class FeedMessageDisplayAdapter extends ArrayAdapter<FeedMessage> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View view, ViewGroup parent) {
 
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        ViewHolder holder;
+        if (view != null) {
+            holder = (ViewHolder) view.getTag();
+        } else {
+            view = inflater.inflate(R.layout.feed_message_row, parent, false);
+            holder = new ViewHolder(view);
+            view.setTag(holder);
+        }
 
-        View rowView = inflater.inflate(R.layout.feed_message_row, parent, false);
+        // feedTitleTxt
 
-        TextView titleView = (TextView) rowView.findViewById(R.id.title);
-        TextView msgView = (TextView) rowView.findViewById(R.id.description);
-        TextView dateView = (TextView) rowView.findViewById(R.id.date);
+        FeedMessage msg = values.get(position);
+        String desc = msg.getDescription();
 
-        // ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
-        titleView.setText(values.get(position).getTitle());
-        String desc = values.get(position).getDescription();
-        msgView.setText(Html.fromHtml(desc));
-        dateView.setText(values.get(position).getDate());
+        holder.favoriteImg.setImageResource(msg.isFavorite() ? android.R.drawable.star_on : android.R.drawable.star_off);
+        holder.titleView.setText(Html.fromHtml(msg.getTitle()));
+        holder.msgView.setText(Html.fromHtml(desc));
+        holder.dateView.setText(msg.getDate());
+        return view;
+    }
 
-        return rowView;
+    @OnClick(R.id.favoriteImg)
+    void changeFavoriteState(View view) {
+        Toast.makeText(context, "ImageView clicked", Toast.LENGTH_SHORT).show();
     }
 
     public void setData(List<FeedMessage> messageList) {
         this.values = messageList;
+    }
+
+    static class ViewHolder {
+        @BindView(R.id.title) TextView titleView;
+        @BindView(R.id.description) TextView msgView;
+        @BindView(R.id.date) TextView dateView;
+        @BindView(R.id.favoriteImg) ImageView favoriteImg;
+        @BindView(R.id.feedTitleTxt) TextView feedTitleTxt;
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
     }
 }

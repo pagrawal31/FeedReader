@@ -2,7 +2,7 @@ package com.patech.feedreader;
 
 import android.content.Intent;
 
-import com.java.rssfeed.feed.FeedMessage;
+import com.java.rssfeed.model.feed.FeedMessage;
 
 public class ActivityUtils {
 	static String[] mobileArray = {"none"};

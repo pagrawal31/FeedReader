@@ -1,15 +1,11 @@
 package com.patech.utils;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.database.sqlite.SQLiteDatabase;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.java.rssfeed.FeedInfoStore;
 import com.java.rssfeed.ReadTest;
-import com.java.rssfeed.feed.Feed;
-import com.java.rssfeed.feed.FeedMessage;
+import com.java.rssfeed.model.feed.Feed;
+import com.java.rssfeed.model.feed.FeedMessage;
 import com.java.rssfeed.interfaces.IFeedFilter;
 import com.patech.dbhelper.DatabaseUtils;
 
@@ -17,7 +13,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.AbstractList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -66,8 +61,8 @@ public class AppUtils {
     }
 
 
-    public static boolean isEmpty(String search) {
-        if (search == null || search.isEmpty() || search.trim().isEmpty())
+    public static boolean isEmpty(String text) {
+        if (text == null || text.isEmpty() || text.trim().isEmpty())
             return true;
         return false;
     }

@@ -1,7 +1,6 @@
 package com.java.rssfeed;
 
-import com.java.rssfeed.feed.Feed;
-import com.java.rssfeed.filterimpl.FeedFilter;
+import com.java.rssfeed.model.feed.Feed;
 import com.java.rssfeed.interfaces.IFeedFilter;
 
 import java.util.ArrayList;

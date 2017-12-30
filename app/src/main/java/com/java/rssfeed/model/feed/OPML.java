@@ -1,4 +1,4 @@
-package com.patech.imexport.opml;
+package com.java.rssfeed.model.feed;
 
 import java.util.Date;
 import java.util.List;

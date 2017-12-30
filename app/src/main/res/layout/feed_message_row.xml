@@ -18,6 +18,30 @@
 
     <Space android:id="@+id/space" android:layout_width="fill_parent" android:layout_height="@dimen/space_15_15_20_25" android:layout_toRightOf="@id/rightSpace" android:layout_below="@id/description" />
 
-    <TextView android:textSize="@dimen/mini" android:textColor="@color/grey_light"
-        android:gravity="right" android:id="@+id/date" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/summary" android:layout_toRightOf="@id/rightSpace" android:layout_below="@id/space" />
+    <LinearLayout
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_toRightOf="@id/rightSpace" android:layout_below="@id/space">
+
+        <ImageView android:id="@+id/favoriteImg"
+            android:layout_width="@dimen/image_25_25_40_45"
+            android:layout_height="@dimen/mini"
+            android:layout_weight="1"
+            android:src="@android:drawable/star_off"
+            android:clickable="true"
+            android:contentDescription="@string/image" />
+
+        <TextView android:id="@+id/feedTitleTxt"
+            android:textSize="@dimen/mini" android:textColor="@color/grey_light"
+            android:gravity="left"  android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="@string/feed_title" />
+
+        <TextView android:id="@+id/date"
+            android:textSize="@dimen/mini" android:textColor="@color/grey_light"
+            android:gravity="right"  android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="@string/timestamp" />
+
+    </LinearLayout>
 </RelativeLayout>

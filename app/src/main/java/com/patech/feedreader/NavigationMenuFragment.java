@@ -6,13 +6,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.java.rssfeed.FeedInfoStore;
-import com.java.rssfeed.feed.Feed;
+import com.java.rssfeed.model.feed.Feed;
 import com.patech.adapters.FeedMessageDisplayAdapter;
 import com.patech.dialog.AddFilterDialog;
 import com.patech.enums.FilterLevel;
 import com.patech.utils.AppUtils;
 import com.patech.utils.CollectionUtils;
-import com.java.rssfeed.feed.FeedMessage;
+import com.java.rssfeed.model.feed.FeedMessage;
 import com.java.rssfeed.ReadTest;
 
 import android.app.DialogFragment;
@@ -72,7 +72,7 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
 			prefVariable.append(idx);
 		}
         Feed currFeed = FeedInfoStore.getInstance().getFeed(idx);
-		title = currFeed.getTitle();
+		title = currFeed.getName();
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
 

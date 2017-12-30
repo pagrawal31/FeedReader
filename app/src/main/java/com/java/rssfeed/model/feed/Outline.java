@@ -1,4 +1,4 @@
-package com.patech.imexport.opml;
+package com.java.rssfeed.model.feed;
 
 import java.util.Date;
 import java.util.List;
@@ -18,5 +18,5 @@ public class Outline {
     private Date created;
     private String category;
 
-    private List<Subscription> subscriptions;
+    private List<Feed> subscriptions;
 }

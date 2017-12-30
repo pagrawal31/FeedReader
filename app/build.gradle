@@ -41,5 +41,4 @@ dependencies {
 
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     annotationProcessor "org.projectlombok:lombok:1.16.18"
-    runtimeOnly 'net.sf.kxml:kxml2:2.3.0+'
 }

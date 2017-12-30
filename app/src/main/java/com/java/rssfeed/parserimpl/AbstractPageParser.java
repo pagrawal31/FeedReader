@@ -1,7 +1,7 @@
 package com.java.rssfeed.parserimpl;
 
-import com.java.rssfeed.feed.Feed;
-import com.java.rssfeed.feed.FeedMessage;
+import com.java.rssfeed.model.feed.Feed;
+import com.java.rssfeed.model.feed.FeedMessage;
 import com.java.rssfeed.filterimpl.ExcludeFeedFilter;
 import com.java.rssfeed.filterimpl.IncludeFeedFilter;
 import com.java.rssfeed.interfaces.IFeedFilter;

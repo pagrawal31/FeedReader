@@ -19,6 +19,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -38,6 +39,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
+
+import static com.patech.utils.AppUtils.isEmpty;
 
 public class MessageViewActivity extends AppCompatActivity {
 
@@ -69,16 +72,17 @@ public class MessageViewActivity extends AppCompatActivity {
 
 		Intent i = getIntent();
 		String title = i.getStringExtra(TITLE);
-		title = title.isEmpty() ? " " : title;
-		
+		title = isEmpty(title) ? " " : title;
+
 		String description = i.getStringExtra(DESCRIPTION);
-		description = description.isEmpty() ? " " : description;
+		description = isEmpty(description) ? " " : description;
 		
 		String link = i.getStringExtra(LINK);
-		link = link.isEmpty() ? " " : link;
+		link = isEmpty(link) ? " " : link;
 		
 		String author = i.getStringExtra(AUTHOR);
-		author = author.isEmpty() ? " " : author;
+		author = isEmpty(author) ? " " : author;
+
 		String date = i.getStringExtra(DATE);
 
 		Html.ImageGetter imageGetter = new Html.ImageGetter() {
@@ -94,7 +98,9 @@ public class MessageViewActivity extends AppCompatActivity {
 			}
 		};
 
-		if (author == null || author.isEmpty()) {
+		title = Html.fromHtml(title) + "";
+		if (isEmpty(author)) {
+
         } else {
             title = Html.fromHtml(author) + " : " + title;
         }

@@ -39,7 +39,7 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/cleanFeedMsg"
+        android:id="@+id/cleanAllFeedMsg"
         android:orderInCategory="200"
         android:title="@string/clean_feed_msg"
         app:showAsAction="never"/>

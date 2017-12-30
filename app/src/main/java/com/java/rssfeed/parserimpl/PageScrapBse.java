@@ -18,9 +18,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
-import com.java.rssfeed.feed.Feed;
+import com.java.rssfeed.model.feed.Feed;
 import com.java.rssfeed.FeedInfoStore;
-import com.java.rssfeed.feed.FeedMessage;
+import com.java.rssfeed.model.feed.FeedMessage;
 import com.java.rssfeed.interfaces.IPageParser;
 import com.patech.utils.AppUtils;
 
@@ -116,8 +116,8 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
                                     // first is company name
                                     // second is Type of update
                                     // third is link of pdf
-                                    name = trNode.childNode(0).toString();
-                                    title = cleanupHtmlMarkup(trNode.childNode(1).childNode(0).toString());
+                                    title = trNode.childNode(0).toString();
+                                    name = cleanupHtmlMarkup(trNode.childNode(1).childNode(0).toString());
                                     link = trNode.childNode(2).childNode(0).attributes().get("href");
                                     break;
                                 case 1:
