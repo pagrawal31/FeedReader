@@ -2,9 +2,13 @@ package com.java.rssfeed.model.feed;
 
 import com.patech.utils.AppUtils;
 
+import org.apache.commons.collections4.list.SetUniqueList;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +35,7 @@ public class Feed {
     private String lastUpdated = "NA";
     private String lastScanned = "NA";
 
-    final List<FeedMessage> entries = new ArrayList<>();
+    final List<FeedMessage> entries = SetUniqueList.setUniqueList(new ArrayList<FeedMessage>());
 
     public Feed(FeedBuilder builder) {
         this.name = builder.name;
@@ -160,8 +164,18 @@ public class Feed {
         return true;
     }
 
-    public void deleteAllMsgs() {
-        entries.clear();
+    public void deleteAllMsgs(Set<FeedMessage> filteredMsg) {
+        if (filteredMsg.isEmpty()) {
+            entries.clear();
+        } else {
+            Iterator<FeedMessage> iterator = entries.iterator();
+            while (iterator.hasNext()) {
+                FeedMessage currMsg = iterator.next();
+                if (!filteredMsg.contains(currMsg)) {
+                    iterator.remove();
+                }
+            }
+        }
     }
 
 }

@@ -92,8 +92,8 @@ public class AbstractPageParser {
         filters.remove(filter);
     }
 
-    public void cleanUpFeedMsgs(Feed feedInfo) {
-        feedInfo.deleteAllMsgs();
+    public void cleanUpFeedMsgs(Feed feedInfo, Set<FeedMessage> filteredMsg) {
+        feedInfo.deleteAllMsgs(filteredMsg);
     }
 
     public void removeFilterAll() {

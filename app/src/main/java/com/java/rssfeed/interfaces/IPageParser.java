@@ -13,7 +13,7 @@ public interface IPageParser {
     public void addFilter(IFeedFilter filter);
     public void removeFilter(IFeedFilter filter);
     public void removeFilterAll();
-    public void cleanUpFeedMsgs(Feed feedInfo);
+    public void cleanUpFeedMsgs(Feed feedInfo, Set<FeedMessage> excludeMsgs);
     public Set<IFeedFilter> getFilters();
     public boolean filterFeedMessage(FeedMessage message);
     public boolean filterFeedMessageExcluded(FeedMessage message);

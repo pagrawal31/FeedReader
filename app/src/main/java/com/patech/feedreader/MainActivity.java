@@ -19,6 +19,8 @@ import com.patech.utils.AppConstants;
 import com.patech.utils.CommonMsgs;
 import com.patech.utils.AppUtils;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -164,9 +166,19 @@ public class MainActivity extends AppCompatActivity implements
 				stopService(feedIntentService);
 			break;
         case R.id.deleteAllFilters:
-            DatabaseUtils.clearFiltersDb(mWriterFeedDB);
-            FeedInfoStore.getInstance().cleanupFilter();
-            ReadTest.removeAllFilter();
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Title")
+                    .setMessage("Do you really want to delete all Msg")
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            Toast.makeText(MainActivity.this, "Yaay", Toast.LENGTH_SHORT).show();
+                            clearAllMsg();
+                        }})
+                    .setNegativeButton(android.R.string.no, null).show();
+
             break;
         case R.id.setUpdateFrequency:
             UpdateFrequencyDialog mDialog = UpdateFrequencyDialog.newInstance();
@@ -183,6 +195,12 @@ public class MainActivity extends AppCompatActivity implements
         }
 		return super.onOptionsItemSelected(item);
 	}
+
+    private void clearAllMsg() {
+        DatabaseUtils.clearFiltersDb(mWriterFeedDB);
+        FeedInfoStore.getInstance().cleanupFilter();
+        ReadTest.removeAllFilter();
+    }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {

@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.java.rssfeed.model.feed.Feed;
 import com.java.rssfeed.model.feed.FeedMessage;
@@ -173,7 +175,14 @@ public class ReadTest {
 
         }
         if (parser != null) {
-            parser.cleanUpFeedMsgs(feed);
+            Set<FeedMessage> filteredMsg = new HashSet<>();
+            for (FeedMessage msg : feed.getMessages()) {
+                if (parser.filterFeedMessage(msg)) {
+                    msg.setFavorite(true);
+                    filteredMsg.add(msg);
+                }
+            }
+            parser.cleanUpFeedMsgs(feed, filteredMsg);
         }
     }
 }

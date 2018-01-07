@@ -27,6 +27,7 @@ android {
 
 dependencies {
     compile files('libs/jsoup-1.8.3.jar')
+    compile files('libs/org.apache.commons.commons-collections4-4.1.jar')
     compile 'net.sf.kxml:kxml2:2.3.0+'
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'junit:junit:4.12'
