@@ -169,13 +169,13 @@ public class MainActivity extends AppCompatActivity implements
 
             new AlertDialog.Builder(this)
                     .setTitle("Title")
-                    .setMessage("Do you really want to delete all Msg")
+                    .setMessage("Do you really want to delete all Filters")
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                         public void onClick(DialogInterface dialog, int whichButton) {
                             Toast.makeText(MainActivity.this, "Yaay", Toast.LENGTH_SHORT).show();
-                            clearAllMsg();
+                            clearAllFilters();
                         }})
                     .setNegativeButton(android.R.string.no, null).show();
 
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements
 		return super.onOptionsItemSelected(item);
 	}
 
-    private void clearAllMsg() {
+    private void clearAllFilters() {
         DatabaseUtils.clearFiltersDb(mWriterFeedDB);
         FeedInfoStore.getInstance().cleanupFilter();
         ReadTest.removeAllFilter();

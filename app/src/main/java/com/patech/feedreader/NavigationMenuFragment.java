@@ -8,6 +8,7 @@ import java.util.List;
 import com.java.rssfeed.FeedInfoStore;
 import com.java.rssfeed.model.feed.Feed;
 import com.patech.adapters.FeedMessageDisplayAdapter;
+import com.patech.dbhelper.DatabaseUtils;
 import com.patech.dialog.AddFilterDialog;
 import com.patech.enums.FilterLevel;
 import com.patech.utils.AppUtils;
@@ -15,8 +16,10 @@ import com.patech.utils.CollectionUtils;
 import com.java.rssfeed.model.feed.FeedMessage;
 import com.java.rssfeed.ReadTest;
 
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.ListFragment;
+import android.content.DialogInterface;
 import android.support.annotation.Nullable;
 import android.content.Context;
 import android.content.Intent;
@@ -48,6 +51,7 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
     int idx = 0;
 	StringBuffer prefVariable = new StringBuffer("int_");
 	String title = AppUtils.EMPTY;
+	private Context context;
 
     public interface NavigationMenuInterface {
         public boolean onClickManageFilters(int position);
@@ -64,6 +68,7 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
 	@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);
+        this.context = context;
 		preferences = this.getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
 
 		if (getArguments() != null) {
@@ -122,11 +127,26 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
                 ReadTest.removeAllFeedMsgs(idx);
                 break;
             case R.id.cleanFeedFilter:
-                ReadTest.removeAllFilter(idx);
+
+                new AlertDialog.Builder(this.context)
+                        .setTitle("Title")
+                        .setMessage("Do you really want to delete all Filters")
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                Toast.makeText(context, "Yaay", Toast.LENGTH_SHORT).show();
+                                clearAllFilters(idx);
+                            }})
+                        .setNegativeButton(android.R.string.no, null).show();
                 break;
         }
 		return super.onOptionsItemSelected(item);
 	}
+
+    private void clearAllFilters(int idx) {
+        ReadTest.removeAllFilter(idx);
+    }
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
