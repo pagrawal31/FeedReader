@@ -57,7 +57,7 @@ public class NavigationViewAdapter extends BaseAdapter {
             String desc = feedCursor.getString(feedCursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_DESC));
             String title = feedCursor.getString(feedCursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_TITLE));
             String url = feedCursor.getString(feedCursor.getColumnIndexOrThrow(FeedEntry.COLUMN_NAME_URL));
-            Feed newFeed = new Feed.FeedBuilder().setName(title).setDescription(desc).build(url);
+            Feed newFeed = new Feed.FeedBuilder().setTitle(title).setDescription(desc).build(url);
 
             FeedInfoStore.getInstance().addFeedIntoList(newFeed);
 
@@ -155,7 +155,7 @@ public class NavigationViewAdapter extends BaseAdapter {
         //
 
         Feed feed = menus.get(position);
-        String title = feed.getName();
+        String title = feed.getTitle();
         String summary = feed.getDescription();
         String lastUpdatedVal = feed.getLastUpdated();
         String lastScannedDate = feed.getLastScanned();

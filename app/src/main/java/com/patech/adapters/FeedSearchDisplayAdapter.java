@@ -50,7 +50,7 @@ public class FeedSearchDisplayAdapter extends ArrayAdapter {
         TextView nameView = rowView.findViewById(R.id.name);
         TextView urlView = rowView.findViewById(R.id.url);
 
-        nameView.setText(feeds.get(position).getName());
+        nameView.setText(feeds.get(position).getTitle());
         urlView.setText(feeds.get(position).getLink());
         return rowView;
     }

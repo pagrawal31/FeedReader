@@ -113,7 +113,7 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
                             switch (position) {
                                 case 0:
                                     // tr contains three td here
-                                    // first is company name
+                                    // first is company title
                                     // second is Type of update
                                     // third is link of pdf
                                     title = trNode.childNode(0).toString();

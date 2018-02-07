@@ -168,7 +168,7 @@ public class ReadTest {
     public static void removeAllFeedMsgs(int idx) {
         IPageParser parser = null;
         Feed feed = FeedInfoStore.getInstance().getFeed(idx);
-
+    
         try {
             parser = getFeedParser(idx);
         } catch (Exception e) {
@@ -176,7 +176,7 @@ public class ReadTest {
         }
         if (parser != null) {
             Set<FeedMessage> filteredMsg = new HashSet<>();
-            for (FeedMessage msg : feed.getMessages()) {
+            for (FeedMessage msg : getAllMessages(idx)) {
                 if (parser.filterFeedMessage(msg)) {
                     msg.setFavorite(true);
                     filteredMsg.add(msg);

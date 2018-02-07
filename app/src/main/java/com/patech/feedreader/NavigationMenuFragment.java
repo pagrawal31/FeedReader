@@ -8,7 +8,6 @@ import java.util.List;
 import com.java.rssfeed.FeedInfoStore;
 import com.java.rssfeed.model.feed.Feed;
 import com.patech.adapters.FeedMessageDisplayAdapter;
-import com.patech.dbhelper.DatabaseUtils;
 import com.patech.dialog.AddFilterDialog;
 import com.patech.enums.FilterLevel;
 import com.patech.utils.AppUtils;
@@ -77,7 +76,7 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
 			prefVariable.append(idx);
 		}
         Feed currFeed = FeedInfoStore.getInstance().getFeed(idx);
-		title = currFeed.getName();
+		title = currFeed.getTitle();
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
 

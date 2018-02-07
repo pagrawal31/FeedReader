@@ -44,6 +44,17 @@
         android:title="@string/clean_feed_msg"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/import_file"
+        android:orderInCategory="200"
+        android:title="@string/import_from_file"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/export_file"
+        android:orderInCategory="200"
+        android:title="@string/export_to_file"
+        app:showAsAction="never"/>
 
 
     <!--<item-->

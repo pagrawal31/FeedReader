@@ -31,6 +31,11 @@ public class AppUtils {
 
     public static final String[] EMPTY_SELECTION = new String[]{};
 
+    // Ad starts
+    public static final String ADMOB_ID = "ca-app-pub-4403433540523787~5285704635";
+    // Ad ends
+
+
     public static int getIntFromBoolean(boolean value) {
         return value ? 1 : 0;
     }

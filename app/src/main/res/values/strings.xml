@@ -138,5 +138,8 @@
     <string name="clean_feed_filter">Delete All Filters</string>
     <string name="timestamp">Message Time</string>
     <string name="feed_title">Feed Title</string>
+    <string name="banner_ad_unit_id">ca-app-pub-4403433540523787/9324543068</string>
+    <string name="import_from_file">Import From OMPL</string>
+    <string name="export_to_file">Export To OPML</string>
 
 </resources>

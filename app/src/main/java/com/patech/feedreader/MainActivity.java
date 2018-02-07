@@ -1,11 +1,16 @@
 package com.patech.feedreader;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.java.rssfeed.model.feed.Outline;
 import com.patech.adapters.NavigationViewAdapter;
 import com.patech.dbhelper.DatabaseUtils;
 import com.patech.dbhelper.FeedDatabaseOpenHelper;
 import com.patech.dialog.AddFilterDialog;
 import com.patech.dialog.FeedDialog;
 import com.patech.dialog.UpdateFrequencyDialog;
+import com.patech.imexport.opml.OpmlParser;
 import com.patech.location.Connectivity;
 import com.patech.services.FeedIntentService;
 import com.java.rssfeed.FeedInfoStore;
@@ -20,6 +25,8 @@ import com.patech.utils.CommonMsgs;
 import com.patech.utils.AppUtils;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.support.design.widget.FloatingActionButton;
@@ -49,8 +56,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -66,6 +77,9 @@ public class MainActivity extends AppCompatActivity implements
     private static final String STRING_EXCLUDE = "Exclude";
     private static final String STRING_INCLUDE = "Include";
     private static final String URL_NOT_VALID = "URL Of this Feed is not valid";
+    private static final String FILENAME = "feedExport";
+    private static final String EXTENSION = "opml";
+    private static final String dirPath = "feedreader";
     /**
 	 * Fragment managing the behaviors, interactions and presentation of the
 	 * navigation drawer.
@@ -87,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements
     private SQLiteDatabase mReaderFeedDB = null;
     private Map<String, Integer> infoStoreMap;
 
-
     private NavigationViewAdapter navViewAdapter;
     private SharedPreferences sharedPreferences;
     private ActionBarDrawerToggle toggle;
@@ -98,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements
     @BindView(R.id.drawer_layout) DrawerLayout drawer;
     @BindView(R.id.nav_view) NavigationView navigationView;
     @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.adView) AdView mAdView;
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements
         prefs = getPreferences(MODE_PRIVATE);
 
         initDB();
+        initAds();
         firstTimeInit();
         initUI();
 	}
@@ -149,6 +164,14 @@ public class MainActivity extends AppCompatActivity implements
 		return super.onCreateOptionsMenu(menu);
 	}
 
+    private void initAds() {
+        // Ad begins
+        MobileAds.initialize(this, AppUtils.ADMOB_ID);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+        // Ad ends
+    }
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
@@ -160,6 +183,14 @@ public class MainActivity extends AppCompatActivity implements
         case R.id.action_tutorial:
             Intent tutorialActivity = new Intent(getApplicationContext(), TutorialActivity.class);
             startActivity(tutorialActivity);
+            break;
+        case R.id.import_file:
+//            Intent tutorialActivity = new Intent(getApplicationContext(), TutorialActivity.class);
+//            startActivity(tutorialActivity);
+            fileImport();
+            break;
+        case R.id.export_file:
+            fileExport();
             break;
 		case R.id.stopService:
 			if (feedIntentService != null)
@@ -277,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements
         if (validInput(nameVal, summaryVal, urlVal)) {
             // Insert the new row, returning the primary key value of the new row
             Feed.FeedBuilder builder = new Feed.FeedBuilder();
-            Feed newFeed = builder.setName(nameVal).setDescription(summaryVal).build(urlVal);
+            Feed newFeed = builder.setTitle(nameVal).setDescription(summaryVal).build(urlVal);
 
             Cursor cursor = DatabaseUtils.fetchFeedFromDatabase(mReaderFeedDB, newFeed);
             cursor.moveToNext();
@@ -473,5 +504,54 @@ public class MainActivity extends AppCompatActivity implements
     public SQLiteDatabase getWritableDatabase() {
         return mWriterFeedDB;
     }
+
+    public void fileImport() {
+        List<Outline> outlines = new ArrayList<>();
+//        for (Feed feed : FeedInfoStore.getInstance().getFeedInfoList()) {
+//            List<Feed> subscriptionList = Collections.singletonList(feed);
+//            Outline outline = new Outline();
+//            outline.setSubscriptions(subscriptionList);
+//            outlines.add(outline);
+//        }
+
+        File f = new File(getAbsoluteFilePath(FILENAME));
+        try {
+            outlines = OpmlParser.read(f);
+            Toast.makeText(getApplicationContext(), "Successfully Imported", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), "Error in Importing", Toast.LENGTH_SHORT).show();
+        }
+        for (Outline outline : outlines) {
+            Feed feed = outline.getSubscriptions().get(0);
+            long newRowId = AppUtils.insertFeedWithGlobalFilters(getWritableDatabase(), feed, true);
+        }
+    }
+
+    public void fileExport() {
+        List<Outline> outlines = new ArrayList<>();
+        for (Feed feed : FeedInfoStore.getInstance().getFeedInfoList()) {
+            List<Feed> subscriptionList = Collections.singletonList(feed);
+            Outline outline = new Outline();
+            outline.setSubscriptions(subscriptionList);
+            outlines.add(outline);
+        }
+
+        File f = new File(getAbsoluteFilePath(FILENAME));
+        try {
+            OpmlParser.write(outlines, f);
+            Toast.makeText(getApplicationContext(), "Successfully Exported", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), "Error in Exporting", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private String getAbsoluteFilePath(String fileName) {
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        File directory = cw.getDir(dirPath, Context.MODE_PRIVATE);
+        String imageFileName = fileName + EXTENSION;
+        return String.format("%s/%s", directory, imageFileName);
+    }
+
+
 
 }

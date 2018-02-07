@@ -26,6 +26,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.patech.utils.AppConstants;
 import com.patech.utils.AppUtils;
 import com.patech.utils.CommonMsgs;
@@ -56,6 +59,7 @@ public class MessageViewActivity extends AppCompatActivity {
 	@BindView(R.id.linkTxtView) TextView linkTxtView;
 	@BindView(R.id.dateView) TextView dateView;
 	@BindView(R.id.openLinkBtn) Button openLinkBtn;
+	@BindView(R.id.adView) AdView mAdView;
 
     public MessageViewActivity() {
 	}
@@ -69,6 +73,7 @@ public class MessageViewActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        initAds();
 
 		Intent i = getIntent();
 		String title = i.getStringExtra(TITLE);
@@ -108,6 +113,15 @@ public class MessageViewActivity extends AppCompatActivity {
         descriptionTxtView.setText(Html.fromHtml(description));
 		linkTxtView.setText(link);
 		dateView.setText(date);
+
+	}
+
+	private void initAds() {
+		// Ad begins
+		MobileAds.initialize(this, AppUtils.ADMOB_ID);
+		AdRequest adRequest = new AdRequest.Builder().build();
+		mAdView.loadAd(adRequest);
+		// Ad ends
 	}
 
 

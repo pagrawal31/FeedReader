@@ -85,7 +85,7 @@ public class RSSFeedParser extends AbstractPageParser implements IPageParser {
                         if (isFeedHeader) {
                             isFeedHeader = false;
                             Feed.FeedBuilder builder = new Feed.FeedBuilder();
-                            feed = builder.setName(title)
+                            feed = builder.setTitle(title)
                                     .setDescription(description)
                                     .setLanguage(language)
                                     .setCopyright(copyright)

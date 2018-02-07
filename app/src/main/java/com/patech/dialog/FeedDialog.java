@@ -50,15 +50,6 @@ public class FeedDialog extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         dialogView = inflater.inflate(R.layout.dialog_add_feed, null);
 
-        EditText urlText = (EditText) dialogView.findViewById(R.id.url);
-        urlText.setLongClickable(true);
-        urlText.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                ((FeedReaderApplication)activity.getApplication()).copyToClipboard((TextView) view, FEED_DATA);
-                return true;
-            }
-        });
     }
 
 
@@ -76,10 +67,20 @@ public class FeedDialog extends DialogFragment {
             EditText summaryText = (EditText) dialogView.findViewById(R.id.filterText);
             EditText urlText = (EditText) dialogView.findViewById(R.id.url);
 
-            nameText.setText(this.feed.getName());
+            nameText.setText(this.feed.getTitle());
             summaryText.setText(this.feed.getDescription());
             urlText.setText(this.feed.getLink());
             urlText.setEnabled(false);
+
+            urlText.setLongClickable(true);
+            urlText.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    ((FeedReaderApplication)getActivity().getApplication()).copyToClipboard((TextView) view, FEED_DATA);
+                    return true;
+                }
+            });
+
         }
 
         // Inflate and set the layout for the dialog

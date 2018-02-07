@@ -85,7 +85,7 @@ public class DatabaseUtils {
 
     public static long insertFeedIntoDb(SQLiteDatabase db, Feed feed) {
         ContentValues values = new ContentValues();
-        values.put(FeedContract.FeedEntry.COLUMN_NAME_TITLE, feed.getName());
+        values.put(FeedContract.FeedEntry.COLUMN_NAME_TITLE, feed.getTitle());
         values.put(FeedContract.FeedEntry.COLUMN_NAME_DESC, feed.getDescription());
         values.put(FeedContract.FeedEntry.COLUMN_NAME_URL, feed.getLink());
 

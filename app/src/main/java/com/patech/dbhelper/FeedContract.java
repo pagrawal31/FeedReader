@@ -35,7 +35,7 @@ public class FeedContract {
     public static class FilterEntry implements BaseColumns{
         public final static String TABLE_NAME = "table_filters";
 
-        public final static String COLUMN_NAME_NAME = "name";
+        public final static String COLUMN_NAME_NAME = "title";
         public final static String COLUMN_NAME_TYPE = "type";
         public final static String COLUMN_NAME_DESC = "desc";
         public final static String COLUMN_NAME_TEXT = "txt";

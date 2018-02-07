@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import com.patech.imexport.opml.OpmlParser;
@@ -31,6 +32,10 @@ public class ApplicationTests {
         }
         List<Outline> outlines = OpmlParser.read(f);
         assert (outlines.size() == 68);
+
+        File outputFile = new File(dirPath + SEPARATOR + "output_example.opml");
+        OpmlParser.write(outlines, outputFile);
+
     }
 
     public String getResourceDir() {

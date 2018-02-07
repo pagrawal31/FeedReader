@@ -5,7 +5,6 @@ import com.patech.utils.AppUtils;
 import org.apache.commons.collections4.list.SetUniqueList;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +23,7 @@ public class Feed {
 
     // htmlUrl generally points to the original website
     private String htmlUrl;
-    private String name;
+    private String title;
     private String description;
     private String language;
     private String copyright;
@@ -38,7 +37,7 @@ public class Feed {
     final List<FeedMessage> entries = SetUniqueList.setUniqueList(new ArrayList<FeedMessage>());
 
     public Feed(FeedBuilder builder) {
-        this.name = builder.name;
+        this.title = builder.title;
         this.xmlUrl = builder.url;
         this.description = builder.description;
         this.language = builder.language;
@@ -64,7 +63,7 @@ public class Feed {
     }
 
     public static class FeedBuilder {
-        private String name = AppUtils.EMPTY;
+        private String title = AppUtils.EMPTY;
         private String url = AppUtils.EMPTY;
         private String type = AppUtils.EMPTY;
         private String description = AppUtils.EMPTY;
@@ -75,8 +74,8 @@ public class Feed {
         public FeedBuilder() {
         }
 
-        public FeedBuilder setName(String name) {
-            this.name = name;
+        public FeedBuilder setTitle(String title) {
+            this.title = title;
             return this;
         }
         public FeedBuilder setDescription(String description) {

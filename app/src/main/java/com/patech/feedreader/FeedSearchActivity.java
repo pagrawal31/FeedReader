@@ -185,7 +185,7 @@ public class FeedSearchActivity extends AppCompatActivity implements AdapterView
                             feedBuilder.setDescription(tagValue);
                             break;
                         case "title":
-                            feedBuilder.setName(tagValue);
+                            feedBuilder.setTitle(tagValue);
                             break;
                         case "feedId":
                             currUrl = tagValue;

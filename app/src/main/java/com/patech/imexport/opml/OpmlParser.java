@@ -1,5 +1,7 @@
 package com.patech.imexport.opml;
 
+import android.util.Xml;
+
 import com.java.rssfeed.model.feed.Feed;
 import com.java.rssfeed.model.feed.OPML;
 import com.java.rssfeed.model.feed.Outline;
@@ -7,11 +9,14 @@ import com.java.rssfeed.model.feed.Outline;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
+import org.xmlpull.v1.XmlSerializer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,12 +25,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import static com.patech.utils.AppUtils.isEmpty;
 
 /**
  * Created by Mohit on 26/11/17.
  */
 
 public class OpmlParser {
+    enum OPMLTag {
+
+        OUTLINE("outline"),
+        HEAD("head"),
+        BODY("body"),
+        TYPE("type"),
+        CATEGORY("category"),
+        CREATED("created"),
+        HTMLURL("htmlUrl"),
+        DESCRIPTION("description"),
+        TITLE("title"), LANGUAGE("language"), COPYRIGHT("copyright"), TEXT("text"), XMLURL("xmlUrl"), OPML("opml");
+
+        String name;
+        OPMLTag(String name) {
+            this.name = name;
+        }
+        public String getName() {
+            return name;
+        }
+    }
+
     private static final String EMPTY_STRING = "";
     private static final String RFC822_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss Z";
 
@@ -118,46 +145,46 @@ public class OpmlParser {
                                 break;
 
                             case "outline":
-                                if (attributes.containsKey("text")) {
-                                    String outlineText = (String) attributes.get("text");
+                                if (attributes.containsKey(OPMLTag.TEXT.getName())) {
+                                    String outlineText = (String) attributes.get(OPMLTag.TEXT.getName());
 
                                     if (!nestedOutline) {
                                         outline.setText(outlineText);
                                     }
 
-                                    feedBuilder.setName(outlineText);
+                                    feedBuilder.setDescription(outlineText);
                                 }
 
-                                if (attributes.containsKey("type")) {
-                                    feedBuilder.setType((String)attributes.get("type"));
+                                if (attributes.containsKey(OPMLTag.TYPE.getName())) {
+                                    feedBuilder.setType((String)attributes.get(OPMLTag.TYPE.getName()));
                                 }
 
-                                if (attributes.containsKey("created")) {
-                                    outline.setCreated(getDate((String)attributes.get("created")));
+                                if (attributes.containsKey(OPMLTag.CREATED.getName())) {
+                                    outline.setCreated(getDate((String)attributes.get(OPMLTag.CREATED.getName())));
                                 }
 
-                                if (attributes.containsKey("category")) {
-                                    outline.setCategory((String)attributes.get("category"));
+                                if (attributes.containsKey(OPMLTag.CATEGORY.getName())) {
+                                    outline.setCategory((String)attributes.get(OPMLTag.CATEGORY.getName()));
                                 }
 
-                                if (attributes.containsKey("htmlUrl")) {
-                                    feedBuilder.setHtmlUrl((String)attributes.get("htmlUrl"));
+                                if (attributes.containsKey(OPMLTag.HTMLURL.getName())) {
+                                    feedBuilder.setHtmlUrl((String)attributes.get(OPMLTag.HTMLURL.getName()));
                                 }
 
-                                if (attributes.containsKey("description")) {
-                                    feedBuilder.setDescription((String)attributes.get("description"));
+                                if (attributes.containsKey(OPMLTag.DESCRIPTION.getName())) {
+                                    feedBuilder.setDescription((String)attributes.get(OPMLTag.DESCRIPTION.getName()));
                                 }
 
-                                if (attributes.containsKey("title")) {
-                                    feedBuilder.setName((String)attributes.get("title"));
+                                if (attributes.containsKey(OPMLTag.TITLE.getName())) {
+                                    feedBuilder.setTitle((String)attributes.get("title"));
                                 }
 
-                                if (attributes.containsKey("language")) {
-                                    feedBuilder.setLanguage((String)attributes.get("language"));
+                                if (attributes.containsKey(OPMLTag.LANGUAGE.getName())) {
+                                    feedBuilder.setLanguage((String)attributes.get(OPMLTag.LANGUAGE.getName()));
                                 }
 
-                                if (attributes.containsKey("xmlUrl")) {
-                                    feed = feedBuilder.build((String)attributes.get("xmlUrl"));
+                                if (attributes.containsKey(OPMLTag.XMLURL.getName())) {
+                                    feed = feedBuilder.build((String)attributes.get(OPMLTag.XMLURL.getName()));
                                 }
                                 if (feed != null && subscriptionList != null)
                                     subscriptionList.add(feed);
@@ -192,11 +219,83 @@ public class OpmlParser {
         } catch (ParseException | XmlPullParserException | RuntimeException  | IOException exception) {
             System.out.println("Exception: " + exception.getMessage());
         }
-
         return outlineList;
     }
 
-    public static void write(List<Outline> outlines, File outputFile) throws FileNotFoundException {
+    public static void write(List<Outline> outlines, File outputFile) throws FileNotFoundException, XmlPullParserException {
+
+        FileOutputStream fos = new  FileOutputStream(outputFile);
+
+        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+
+        XmlSerializer xmlSerializer = factory.newSerializer();
+        StringWriter writer = new StringWriter();
+        try {
+            xmlSerializer.setOutput(writer);
+            xmlSerializer.startDocument("UTF-8", true);
+            xmlSerializer.startTag(null, OPMLTag.OPML.getName());
+            xmlSerializer.attribute(null, "version", "1.0");
+
+            xmlSerializer.startTag(null, OPMLTag.HEAD.getName());
+            xmlSerializer.startTag(null, OPMLTag.TITLE.getName());
+            xmlSerializer.text("My Feeds");
+            xmlSerializer.endTag(null, OPMLTag.TITLE.getName());
+            xmlSerializer.endTag(null, OPMLTag.HEAD.getName());
+
+            xmlSerializer.startTag(null, OPMLTag.BODY.getName());
+
+            for (Outline outline : outlines) {
+                xmlSerializer.startTag(null, OPMLTag.OUTLINE.getName());
+                for (Feed feed : outline.getSubscriptions()) {
+                    serialize(xmlSerializer, feed);
+                }
+                xmlSerializer.endTag(null, OPMLTag.OUTLINE.getName());
+            }
+
+            xmlSerializer.endTag(null, OPMLTag.BODY.getName());
+            xmlSerializer.endTag(null, OPMLTag.OPML.getName());
+            xmlSerializer.endDocument();
+            xmlSerializer.flush();
+            String dataWriter = writer.toString();
+            fos.write(dataWriter.getBytes());
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void serialize(XmlSerializer xmlSerializer, Feed feed) throws IOException {
+        if (!isEmpty(feed.getCopyright())) {
+            writeData(xmlSerializer, feed.getCopyright(), OPMLTag.COPYRIGHT.getName());
+        }
+        if (!isEmpty(feed.getTitle())) {
+            writeData(xmlSerializer, feed.getTitle(), OPMLTag.TITLE.getName());
+        }
+        if (!isEmpty(feed.getText())) {
+            writeData(xmlSerializer, feed.getText(), OPMLTag.TEXT.getName());
+        }
+        if (!isEmpty(feed.getDescription())) {
+            writeData(xmlSerializer, feed.getDescription(), OPMLTag.DESCRIPTION.getName());
+        }
+        if (!isEmpty(feed.getType())) {
+            writeData(xmlSerializer, feed.getType(), OPMLTag.TYPE.getName());
+        }
+        if (!isEmpty(feed.getHtmlUrl())) {
+            writeData(xmlSerializer, feed.getHtmlUrl(), OPMLTag.HTMLURL.getName());
+        }
+        if (!isEmpty(feed.getLanguage())) {
+            writeData(xmlSerializer, feed.getLanguage(), OPMLTag.LANGUAGE.getName());
+        }
+        if (!isEmpty(feed.getXmlUrl())) {
+            writeData(xmlSerializer, feed.getXmlUrl(), OPMLTag.XMLURL.getName());
+        }
+    }
+
+    private static void writeData(XmlSerializer xmlSerializer, String txt, String tag) throws IOException {
+//        xmlSerializer.startTag(null, tag);
+//        xmlSerializer.text(txt);
+//        xmlSerializer.endTag(null, tag);
+        xmlSerializer.attribute(null, tag, txt);
     }
 
     private static Date getDate (String rfd822Date) throws ParseException {
