@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.IBinder;
+import android.text.Html;
 
 public class FeedIntentService extends IntentService {
 
@@ -123,12 +124,14 @@ public class FeedIntentService extends IntentService {
         // use System.currentTimeMillis() to have a unique ID for the pending intent
         PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), showMessageIntent, 0);
 
-		String msg = feedMsg.getTitle() + " " + infoUrl + " " + feedMsg.getDescription();
+		String title = Html.fromHtml(feedMsg.getTitle()) + "";
+		String description = Html.fromHtml(feedMsg.getDescription()) + "";
+		String msg = title + " " + infoUrl + " " + description;
 
         // build notification
         // the addAction re-use the same intent to keep the example short
         Notification.Builder builder   = new Notification.Builder(this)
-                .setContentTitle(feedMsg.getTitle())
+                .setContentTitle(title)
                 .setContentText(msg)
                 .setTicker(msg)
                 .setSmallIcon(android.R.drawable.arrow_up_float)

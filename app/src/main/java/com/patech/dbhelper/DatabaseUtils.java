@@ -35,7 +35,27 @@ public class DatabaseUtils {
         return cursor;
     }
 
-    public static Cursor fetchFiltersFromFilterDb(SQLiteDatabase mReaderFeedDB, IFeedFilter filter) {
+    /*
+    filterId is the auto generated id which is generated when we store the row.
+    do not confuse it with filterValue
+     */
+    public static Cursor fetchFiltersFromFilterDb(SQLiteDatabase mReaderFeedDB, String filterId) {
+        String selection = FilterEntry._ID + " LIKE ?";
+        String[] selectionArgs;
+
+        Cursor cursor = mReaderFeedDB.query(
+                FilterEntry.TABLE_NAME,                     // The table to query
+                FeedContract.filterTableAllProjection ,                               // The columns to return
+                selection,                                // The columns for the WHERE clause
+                new String[]{filterId},            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+        return cursor;
+    }
+
+    public static Cursor fetchFiltersFromFilterDb(SQLiteDatabase mReaderFeedDB, final IFeedFilter filter) {
         String selection = FilterEntry.COLUMN_NAME_TEXT+ " LIKE ?";
         String[] selectionArgs;
 
@@ -50,6 +70,22 @@ public class DatabaseUtils {
         );
         return cursor;
     }
+
+//    public static Cursor fetchFiltersFromFilterDb(SQLiteDatabase mReaderFeedDB, final String filterTxt) {
+//        String selection = FilterEntry.COLUMN_NAME_TEXT+ " LIKE ?";
+//        String[] selectionArgs;
+//
+//        Cursor cursor = mReaderFeedDB.query(
+//                FilterEntry.TABLE_NAME,                     // The table to query
+//                FeedContract.filterTableAllProjection ,                               // The columns to return
+//                selection,                                // The columns for the WHERE clause
+//                new String[]{filterTxt},            // The values for the WHERE clause
+//                null,                                     // don't group the rows
+//                null,                                     // don't filter by row groups
+//                null                                 // The sort order
+//        );
+//        return cursor;
+//    }
 
     public static Cursor fetchFiltersFromFeedFilterDb(SQLiteDatabase mReaderFeedDB, String filterId) {
         String selection = FeedFilterEntry.COLUMN_NAME_FILTER_ID + " LIKE ?";
@@ -67,22 +103,6 @@ public class DatabaseUtils {
         return cursor;
     }
 
-    public static Cursor fetchFiltersFromFilterDb(SQLiteDatabase mReaderFeedDB, String filterId) {
-        String selection = FilterEntry._ID + " LIKE ?";
-        String[] selectionArgs;
-
-        Cursor cursor = mReaderFeedDB.query(
-                FilterEntry.TABLE_NAME,                     // The table to query
-                FeedContract.filterTableAllProjection ,                               // The columns to return
-                selection,                                // The columns for the WHERE clause
-                new String[]{filterId},            // The values for the WHERE clause
-                null,                                     // don't group the rows
-                null,                                     // don't filter by row groups
-                null                                 // The sort order
-        );
-        return cursor;
-    }
-
     public static long insertFeedIntoDb(SQLiteDatabase db, Feed feed) {
         ContentValues values = new ContentValues();
         values.put(FeedContract.FeedEntry.COLUMN_NAME_TITLE, feed.getTitle());
@@ -91,6 +111,28 @@ public class DatabaseUtils {
 
         return db.insert(FeedContract.FeedEntry.TABLE_NAME, null, values);
     }
+
+    // deletes the feed
+    // delete the filters associated with feed
+    // delete entries from feed-filter database
+    public static void deleteFeed(SQLiteDatabase db, Feed feed) {
+        String selection = FeedFilterEntry.COLUMN_NAME_FEED_URL + " LIKE ?";
+
+        // delete the feed
+        db.delete(FeedEntry.TABLE_NAME, selection, new String[]{feed.getLink()});
+
+        Cursor filterCursor = getFilters(db, feed);
+
+        while(filterCursor.moveToNext()) {
+            String filterStr = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry._ID));
+            boolean removeFilter = deleteFilterFromFeedFilterDb(db, filterStr, feed, false);
+            if (removeFilter) {
+                String filterSelection = FilterEntry._ID + " LIKE ?";
+                db.delete(FilterEntry.TABLE_NAME, filterSelection, new String[]{filterStr});
+            }
+        }
+    }
+
 
     public static long insertFilterIntoDb(SQLiteDatabase db, IFeedFilter filter) {
         ContentValues values = new ContentValues();
@@ -119,32 +161,37 @@ public class DatabaseUtils {
     public static void deleteFilterFromFeedFilterDb(SQLiteDatabase db, IFeedFilter filter, Feed feed, boolean isGlobal) {
         // find filterId for filter first
         Cursor filterCursor = fetchFiltersFromFilterDb(db, filter);
-        boolean removeFilter = false;
+
         while(filterCursor.moveToNext()) {
             String filterId = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry._ID));
-            removeFilter = false;
-            if (isGlobal) {
-                String selection = FeedFilterEntry.COLUMN_NAME_FILTER_ID + " LIKE ?";
-                db.delete(FeedFilterEntry.TABLE_NAME, selection, new String[]{filterId});
-                removeFilter = true;
-            } else {
-                String selection = FeedFilterEntry.COLUMN_NAME_FILTER_ID + " LIKE ? AND "+
-                        FeedFilterEntry.COLUMN_NAME_FEED_URL + " LIKE ?";
-                db.delete(FeedFilterEntry.TABLE_NAME, selection, new String[]{filterId, feed.getLink()});
-                Cursor feedFilterCursor = fetchFiltersFromFeedFilterDb(db, filterId);
-                feedFilterCursor.moveToNext();
-                if (feedFilterCursor.getCount() == 0) {
-                    // 0 means there is no other filter in feedFilter table, so we can remove filter from filter table.
-                    removeFilter = true;
-                }
-                feedFilterCursor.close();
-            }
+            boolean removeFilter = deleteFilterFromFeedFilterDb(db, filterId, feed, isGlobal);
             if (removeFilter) {
                 String filterSelection = FilterEntry._ID + " LIKE ?";
                 db.delete(FilterEntry.TABLE_NAME, filterSelection, new String[]{filterId});
             }
         }
         filterCursor.close();
+    }
+
+    public static boolean deleteFilterFromFeedFilterDb(SQLiteDatabase db, String filterId, Feed feed, boolean isGlobal) {
+        boolean removeFilter = false;
+        if (isGlobal) {
+            String selection = FeedFilterEntry.COLUMN_NAME_FILTER_ID + " LIKE ?";
+            db.delete(FeedFilterEntry.TABLE_NAME, selection, new String[]{filterId});
+            removeFilter = true;
+        } else {
+            String selection = FeedFilterEntry.COLUMN_NAME_FILTER_ID + " LIKE ? AND "+
+                    FeedFilterEntry.COLUMN_NAME_FEED_URL + " LIKE ?";
+            db.delete(FeedFilterEntry.TABLE_NAME, selection, new String[]{filterId, feed.getLink()});
+            Cursor feedFilterCursor = fetchFiltersFromFeedFilterDb(db, filterId);
+            feedFilterCursor.moveToNext();
+            if (feedFilterCursor.getCount() == 0) {
+                // 0 means there is no other filter in feedFilter table, so we can remove filter from filter table.
+                removeFilter = true;
+            }
+            feedFilterCursor.close();
+        }
+        return removeFilter;
     }
 
     /*
@@ -155,7 +202,8 @@ public class DatabaseUtils {
         db.delete(FeedFilterEntry.TABLE_NAME, null, null);
     }
 
-    public static void addFeedFilter(SQLiteDatabase db, IFeedFilter filter, Feed feed) {
+
+    public static void insertFeedFilter(SQLiteDatabase db, IFeedFilter filter, Feed feed) {
         Cursor filterCursor = fetchFiltersFromFilterDb(db, filter);
         boolean removeFilter = false;
         while(filterCursor.moveToNext()) {

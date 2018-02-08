@@ -1,11 +1,11 @@
 package com.patech.feedreader;
 
-import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
+import com.java.rssfeed.interfaces.IFeedFilter;
 import com.java.rssfeed.model.feed.Outline;
 import com.patech.adapters.NavigationViewAdapter;
 import com.patech.dbhelper.DatabaseUtils;
+import com.patech.dbhelper.FeedContract.FilterEntry;
 import com.patech.dbhelper.FeedDatabaseOpenHelper;
 import com.patech.dialog.AddFilterDialog;
 import com.patech.dialog.FeedDialog;
@@ -17,7 +17,6 @@ import com.java.rssfeed.FeedInfoStore;
 import com.java.rssfeed.ReadTest;
 import com.java.rssfeed.model.feed.Feed;
 import com.java.rssfeed.filterimpl.ExcludeFeedFilter;
-import com.java.rssfeed.filterimpl.FeedFilter;
 import com.java.rssfeed.filterimpl.IncludeFeedFilter;
 import com.java.rssfeed.interfaces.IPageParser;
 import com.patech.utils.AppConstants;
@@ -43,7 +42,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -68,7 +66,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity implements
+public class MainActivity extends BaseActivity implements
         FeedDialog.FeedDialogInterface, AdapterView.OnItemClickListener,
         AddFilterDialog.AddFilterInterface, NavigationView.OnNavigationItemSelectedListener,
         NavigationMenuFragment.NavigationMenuInterface,
@@ -125,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements
         prefs = getPreferences(MODE_PRIVATE);
 
         initDB();
-        initAds();
+        super.initAds(mAdView);
         firstTimeInit();
         initUI();
 	}
@@ -163,14 +161,6 @@ public class MainActivity extends AppCompatActivity implements
 		}
 		return super.onCreateOptionsMenu(menu);
 	}
-
-    private void initAds() {
-        // Ad begins
-        MobileAds.initialize(this, AppUtils.ADMOB_ID);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
-        // Ad ends
-    }
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -256,15 +246,16 @@ public class MainActivity extends AppCompatActivity implements
 
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
         int menuItemIndex = item.getItemId();
+        Feed feed = FeedInfoStore.getInstance().getFeed(info.position);
         switch (menuItemIndex) {
             case 0:
                 // remove feed
                 navViewAdapter.remove(info.position);
+                DatabaseUtils.deleteFeed(getWritableDatabase(), feed);
+
                 break;
             case 1:
                 // edit feed
-                Feed feed = FeedInfoStore.getInstance().getFeed(info.position);
-
                 FeedDialog mDialog = FeedDialog.newInstance();
                 mDialog.setFeedToDisplay(feed);
                 mDialog.show(getFragmentManager(), "Add Feed");
@@ -309,19 +300,24 @@ public class MainActivity extends AppCompatActivity implements
             // Insert the new row, returning the primary key value of the new row
             Feed.FeedBuilder builder = new Feed.FeedBuilder();
             Feed newFeed = builder.setTitle(nameVal).setDescription(summaryVal).build(urlVal);
-
-            Cursor cursor = DatabaseUtils.fetchFeedFromDatabase(mReaderFeedDB, newFeed);
-            cursor.moveToNext();
-            if (cursor.getCount() == 0) {
-                long newRowId = AppUtils.insertFeedWithGlobalFilters(mWriterFeedDB, newFeed, bIncludeGlobalFilter);
-                navViewAdapter.updateList();
-                if (newRowId > 0) {
-                    Toast.makeText(getApplicationContext(), CommonMsgs.FEED_ADDED, Toast.LENGTH_SHORT).show();
-                }
+            if (tryToAddFeed(newFeed, bIncludeGlobalFilter)) {
+                Toast.makeText(getApplicationContext(), CommonMsgs.FEED_ADDED, Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getApplicationContext(), CommonMsgs.FEED_ALREADY_EXISTS, Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private boolean tryToAddFeed(Feed newFeed, boolean bIncludeGlobalFilter) {
+        Cursor cursor = DatabaseUtils.fetchFeedFromDatabase(mReaderFeedDB, newFeed);
+        cursor.moveToNext();
+        if (cursor.getCount() == 0) {
+            long newRowId = AppUtils.insertFeedWithGlobalFilters(mWriterFeedDB, newFeed, bIncludeGlobalFilter);
+            navViewAdapter.updateList();
+            if (newRowId > 0 )
+                return true;
+        }
+        return false;
     }
 
     private boolean validInput(String nameVal, String summaryVal, String urlVal) {
@@ -346,15 +342,20 @@ public class MainActivity extends AppCompatActivity implements
 
         String nameVal = "";
         String filterValue = "";
-        String urlVal = "";
         if (nameText != null)
             nameVal = nameText.getText().toString().trim();
         if (filterText != null)
             filterValue = filterText.getText().toString().trim();
+
+        if (filterValue.length() <= 1) {
+            Toast.makeText(getApplicationContext(), AppConstants.INVALID_FILTER, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         boolean isInclude = includeCheckBox.isChecked();
         boolean isGlobalFilter = globalFilterCheckBox.isChecked();
 
-        FeedFilter filter = null;
+        IFeedFilter filter = null;
         String filterType = "";
         if (isInclude) {
             filter = new IncludeFeedFilter(filterValue, nameVal, AppUtils.EMPTY, isGlobalFilter);
@@ -364,7 +365,38 @@ public class MainActivity extends AppCompatActivity implements
             filterType = STRING_EXCLUDE;
         }
 
-        long filterId = DatabaseUtils.insertFilterIntoDb(mWriterFeedDB, filter);
+
+        Cursor filterCursor = DatabaseUtils.fetchFiltersFromFilterDb(getReadableDatabase(), filter);
+        int currFilterId = -1;
+
+        IFeedFilter currFilter = null;
+        while(filterCursor.moveToNext()) {
+            currFilterId = Integer.parseInt(filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry._ID)));
+            String currFilterType = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_TYPE));
+            if (currFilterType != filterType)
+                continue;
+
+            String filterDesc = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_DESC));
+            String filterName = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_NAME));
+            String currFilterText = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_TEXT));
+
+            boolean isGlobal = AppUtils.getBooleanFromInt(filterCursor.getInt((filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_NAME_GLOBAL))));
+
+            if (filterType.equals(IncludeFeedFilter.FILTERTYPE)) {
+                currFilter = new IncludeFeedFilter(currFilterText, filterName, filterDesc, isGlobal);
+            } else {
+                currFilter = new ExcludeFeedFilter(currFilterText, filterName, filterDesc, isGlobal);
+            }
+        }
+        filterCursor.close();
+        long filterId = currFilterId;
+
+        if (currFilterId != -1 && !isGlobalFilter) {
+            filter = currFilter;
+        } else {
+            filterId = DatabaseUtils.insertFilterIntoDb(mWriterFeedDB, filter);
+        }
+
         IPageParser parser = null;
         try {
             if (isGlobalFilter) {
@@ -388,11 +420,6 @@ public class MainActivity extends AppCompatActivity implements
 
         Toast.makeText(getApplicationContext(), filterType + " filter [" + nameVal + "] containing text [" + filterValue + "] added",
                 Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onDialogFilterNegativeClick(DialogFragment dialog) {
-
     }
 
     @Override
@@ -507,12 +534,6 @@ public class MainActivity extends AppCompatActivity implements
 
     public void fileImport() {
         List<Outline> outlines = new ArrayList<>();
-//        for (Feed feed : FeedInfoStore.getInstance().getFeedInfoList()) {
-//            List<Feed> subscriptionList = Collections.singletonList(feed);
-//            Outline outline = new Outline();
-//            outline.setSubscriptions(subscriptionList);
-//            outlines.add(outline);
-//        }
 
         File f = new File(getAbsoluteFilePath(FILENAME));
         try {
@@ -521,10 +542,17 @@ public class MainActivity extends AppCompatActivity implements
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Error in Importing", Toast.LENGTH_SHORT).show();
         }
+
+        int addedCount = 0;
         for (Outline outline : outlines) {
             Feed feed = outline.getSubscriptions().get(0);
-            long newRowId = AppUtils.insertFeedWithGlobalFilters(getWritableDatabase(), feed, true);
+            if (tryToAddFeed(feed, true)) {
+                addedCount++;
+            }
         }
+        Toast.makeText(getApplicationContext(), "[" + addedCount + "]" + CommonMsgs.FEED_ADDED + " out of [" + outlines.size() +"].", Toast.LENGTH_SHORT).show();
+
+        navViewAdapter.notifyDataSetChanged();
     }
 
     public void fileExport() {

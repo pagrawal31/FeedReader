@@ -19,7 +19,6 @@ public class AddFilterDialog extends DialogFragment {
 
     public interface AddFilterInterface {
         public void onDialogFilterPositiveClick(DialogFragment dialog);
-        public void onDialogFilterNegativeClick(DialogFragment dialog);
     }
 
     private MainActivity mHandler;
@@ -42,7 +41,6 @@ public class AddFilterDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        //
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -54,18 +52,13 @@ public class AddFilterDialog extends DialogFragment {
                 .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        // sign in the user ...
-
                         mHandler.onDialogFilterPositiveClick(AddFilterDialog.this);
-//                        Toast.makeText(getActivity(), "OK Pressed", Toast.LENGTH_SHORT).show();
 
                     }
                 })
                 .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int id) {
-//                        LoginDialogFragment.this.getDialog().cancel();
-//                        Toast.makeText(getActivity(), "Cancel Pressed", Toast.LENGTH_SHORT).show();
-                        mHandler.onDialogFilterNegativeClick(AddFilterDialog.this);
                     }
                 });
         return builder.create();

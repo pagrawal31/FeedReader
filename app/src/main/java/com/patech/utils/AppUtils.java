@@ -72,6 +72,10 @@ public class AppUtils {
         return false;
     }
 
+    public static String getSharableText(String shareTxt, String packageName) {
+        return shareTxt + packageName;
+    }
+
     public static class Compare implements Comparator<FeedMessage> {
         public int compare(FeedMessage msg1, FeedMessage msg2) {
             Date date1 = AppUtils.parseDate(msg1.getDate());
@@ -92,7 +96,7 @@ public class AppUtils {
                 ReadTest.addFilterToFeed(newFeed, filter);
 
                 // adding feed-filter entry into database
-                DatabaseUtils.addFeedFilter(writeDB, filter, newFeed);
+                DatabaseUtils.insertFeedFilter(writeDB, filter, newFeed);
             }
         }
         return newRowId;

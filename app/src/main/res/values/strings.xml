@@ -142,4 +142,7 @@
     <string name="import_from_file">Import From OMPL</string>
     <string name="export_to_file">Export To OPML</string>
 
+    <string name="send_to">Send To ...</string>
+    <string name="emailId">care.pstechnology@gmail.com</string>
+
 </resources>

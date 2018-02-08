@@ -45,7 +45,7 @@ import butterknife.OnLongClick;
 
 import static com.patech.utils.AppUtils.isEmpty;
 
-public class MessageViewActivity extends AppCompatActivity {
+public class MessageViewActivity extends BaseActivity {
 
     protected static final String TITLE = "TITLE";
     protected static final String DESCRIPTION = "DESCRIPTION";
@@ -73,7 +73,7 @@ public class MessageViewActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        initAds();
+        super.initAds(mAdView);
 
 		Intent i = getIntent();
 		String title = i.getStringExtra(TITLE);
@@ -114,14 +114,6 @@ public class MessageViewActivity extends AppCompatActivity {
 		linkTxtView.setText(link);
 		dateView.setText(date);
 
-	}
-
-	private void initAds() {
-		// Ad begins
-		MobileAds.initialize(this, AppUtils.ADMOB_ID);
-		AdRequest adRequest = new AdRequest.Builder().build();
-		mAdView.loadAd(adRequest);
-		// Ad ends
 	}
 
 
