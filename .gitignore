@@ -9,6 +9,7 @@ app/build/*
 app/release/
 app/release/*
 app/build.gradle
+app/google-services.json
 *.iml
 *.apk
 gradle/wrapper/

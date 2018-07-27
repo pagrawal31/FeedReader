@@ -17,10 +17,11 @@ import com.java.rssfeed.interfaces.IPageParser;
 import com.java.rssfeed.parserimpl.PageScrapBse;
 import com.java.rssfeed.parserimpl.RSSFeedParser;
 import com.patech.enums.FilterLevel;
+import com.patech.utils.AppConstants;
 
 public class ReadTest {
-    
-    private final static String bseCorporateAnnBaseUrl = "http://www.bseindia.com/corporates/ann.aspx";
+
+    private final static String bseCorporateAnnBaseUrl = AppConstants.PROTOCOL + "://" + AppConstants.BASE_BASE_URL + "ann.aspx";
 
     public static List<FeedMessage> getMessages(int i, FilterLevel level) {
         if (level == FilterLevel.All) {
@@ -36,13 +37,13 @@ public class ReadTest {
         Feed feed = null;
         try {
             feed = FeedInfoStore.getInstance().getFeed(i);
-            parser = getFeedParser(i);
-            parser.readFeed(feed);
+//            parser = getFeedParser(i);
+//            parser.readFeed(feed);
         } catch (Exception e) {
             System.out.println("Failed in getting the Info [" + e.getMessage()
                     + "]");
         }
-        if (parser != null && feed != null) {
+        if (feed != null) {
             return new ArrayList<>(feed.getMessages());
         }
         return Collections.EMPTY_LIST;

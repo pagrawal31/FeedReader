@@ -22,6 +22,7 @@ import com.java.rssfeed.model.feed.Feed;
 import com.java.rssfeed.FeedInfoStore;
 import com.java.rssfeed.model.feed.FeedMessage;
 import com.java.rssfeed.interfaces.IPageParser;
+import com.patech.utils.AppConstants;
 import com.patech.utils.AppUtils;
 
 import android.os.AsyncTask;
@@ -35,7 +36,6 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
     private static Date currAtmostDate = null;
     private static Date currDate = null;
     private static Feed feedInfo = null;
-    private boolean newPage = true;
 
     public PageScrapBse(String feedUrl) {
         this.feedUrl = feedUrl;
@@ -175,8 +175,6 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
 
         clearExistingSet(currFeedSet, localEntries);
 
-//        if (newPage && this.feedInfo.getMessages().size())
-
         for (FeedMessage msg : AppUtils.getReverseList(localEntries)) {
             this.feedInfo.getMessages().add(msg);
         }
@@ -255,15 +253,16 @@ public class PageScrapBse extends AbstractPageParser implements IPageParser {
 				System.setProperty("http.agent", "");
 //				feed = new Feed("Bse Corporate Filing", "http://www.bseindia.com/corporates/", null, null, null, null);
 		        String originalUrl = url[0];
-                newPage = true;
 		        while (originalUrl != null && !originalUrl.isEmpty()) {
-		            if (!originalUrl.startsWith("http")) {
-		                originalUrl ="http://www.bseindia.com/corporates/" + originalUrl;
-		            }
+		            if (!originalUrl.startsWith(AppConstants.PROTOCOL)) {
+                        originalUrl = AppConstants.PROTOCOL + "://" + AppConstants.BASE_BASE_URL + originalUrl;
+                    }
 		            String pageContent = extractWebpage(originalUrl);
-		            if (pageContent != null && !pageContent.isEmpty())
-		                originalUrl = scrapPageContent(pageContent);
-		            newPage = false;
+		            if (pageContent != null && !pageContent.isEmpty()) {
+                        originalUrl = scrapPageContent(pageContent);
+                    }
+		            else
+		                break;
 		        }
 		        if (currAtmostDate != null)
 		            latestDate = currAtmostDate;

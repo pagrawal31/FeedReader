@@ -185,14 +185,18 @@ public class NavigationMenuFragment extends ListFragment implements OnItemClickL
         adapter.notifyDataSetChanged();
 	}
 
+//
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-        menu.setHeaderTitle("Position : " + info.position);
-        String[] menuItems = getResources().getStringArray(R.array.menu);
-        for (int i = 0; i<menuItems.length; i++) {
-            menu.add(Menu.NONE, i, i, menuItems[i]);
-        }
+
+        return;
+//        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+//        menu.setHeaderTitle("Position : " + info.position);
+//        String[] menuItems = getResources().getStringArray(R.array.menu);
+//        for (int i = 0; i<menuItems.length; i++) {
+//            menu.add(Menu.NONE, i, i, menuItems[i]);
+//        }
+
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.patech.feedreader;
 import android.app.Application;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
@@ -26,6 +27,11 @@ public class FeedReaderApplication extends Application {
     private long frequencyInMillis = 30000;
     private boolean updateOnWifiOnly = true;
     private SharedPreferences sharedPreferences;
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+    }
 
     @Override
     public void onCreate() {
@@ -52,7 +58,10 @@ public class FeedReaderApplication extends Application {
     }
 
     public boolean isUpdateOnWifiOnly() {
-        return updateOnWifiOnly;
+        return sharedPreferences.getBoolean(getResources().getString(R.string.download_over_wifi), true);
+    }
+    public boolean showNofication() {
+        return sharedPreferences.getBoolean(getResources().getString(R.string.show_nofitication), true);
     }
 
     public void setUpdateOnWifiOnly(boolean updateOnWifiOnly) {
@@ -77,4 +86,5 @@ public class FeedReaderApplication extends Application {
     public SharedPreferences getSharedPreferences() {
         return sharedPreferences;
     }
+
 }

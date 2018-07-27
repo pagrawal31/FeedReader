@@ -116,7 +116,7 @@ public class DatabaseUtils {
     // delete the filters associated with feed
     // delete entries from feed-filter database
     public static void deleteFeed(SQLiteDatabase db, Feed feed) {
-        String selection = FeedFilterEntry.COLUMN_NAME_FEED_URL + " LIKE ?";
+        String selection = FeedEntry.COLUMN_NAME_URL + " LIKE ?";
 
         // delete the feed
         db.delete(FeedEntry.TABLE_NAME, selection, new String[]{feed.getLink()});
@@ -180,9 +180,11 @@ public class DatabaseUtils {
             db.delete(FeedFilterEntry.TABLE_NAME, selection, new String[]{filterId});
             removeFilter = true;
         } else {
+
             String selection = FeedFilterEntry.COLUMN_NAME_FILTER_ID + " LIKE ? AND "+
                     FeedFilterEntry.COLUMN_NAME_FEED_URL + " LIKE ?";
             db.delete(FeedFilterEntry.TABLE_NAME, selection, new String[]{filterId, feed.getLink()});
+
             Cursor feedFilterCursor = fetchFiltersFromFeedFilterDb(db, filterId);
             feedFilterCursor.moveToNext();
             if (feedFilterCursor.getCount() == 0) {

@@ -59,8 +59,11 @@
         based on your message history
     </string>
 
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
+    <!--<string name="pref_title_display_name">Display name</string>-->
+    <string name="pref_title_cleanup">Clean Up in Days</string>
+    <string name="pref_default_cleanup_days">0</string>
+    <string name="pref_key_cleanup_days">cleanup_days_new</string>
+    <string name="pref_diag_title_cleanup">0 is never, value should be 1-31</string>
 
     <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
     <string-array name="pref_example_list_titles">
@@ -125,7 +128,7 @@
     <string name="filterType">Type of Filter</string>
     <string name="deleteAllFilters">Delete all filters</string>
     <string name="setUpdateFrequency">Set Update Frequency</string>
-    <string name="title_activity_feed_search">FeedSearchActivity</string>
+    <string name="title_activity_feed_search">Search Feed Using keyword</string>
 
     <string name="subscribe_keywords_url">Keywords or Url</string>
     <string name="txt_search">Search</string>
@@ -144,5 +147,19 @@
 
     <string name="send_to">Send To ...</string>
     <string name="emailId">care.pstechnology@gmail.com</string>
+
+    <string name="download_over_wifi">Sync Over WiFi Only</string>
+    <string name="pref_title_download_over_wifi">Sync Over WiFi Only</string>
+    <string name="pref_description_download_over_wifi">Sync Over WiFi Only, Disable Sync Over Mobile Data</string>
+    <string name="show_nofitication">Show Notification</string>
+    <string name="pref_description_show_notification">When a Filter is matched the Notification will be displayed</string>
+    <string name="pref_title_show_notification">Show Nofication on Matching Feed</string>
+
+    <!--    Permissions    -->
+    <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>
+    <string name="permission_rationale_read_phone_state">Phone State needed to be known to pause the functioning when the call is coming.</string>
+    <string name="permission_rationale_read_contacts">Reading contacts to show them to you</string>
+    <string name="location_permission_denied">This sample requires location permission to enable the \'my location\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'Google Maps API Demos\'.</string>
+    <string name="permission_required_toast">Location permission is required for this demo.</string>
 
 </resources>

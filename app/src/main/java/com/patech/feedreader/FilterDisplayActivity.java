@@ -106,7 +106,7 @@ public class FilterDisplayActivity extends AppCompatActivity implements AdapterV
                 // c)
 
                 IFeedFilter currFilter = filters.get(info.position);
-                boolean isGlobal = false;
+                boolean isGlobal = currFilter.isGlobalFilter();
                 if (isGlobal) {
                     ReadTest.removeFilterFromFeed(currFilter);
                 } else {
@@ -116,7 +116,7 @@ public class FilterDisplayActivity extends AppCompatActivity implements AdapterV
                 DatabaseUtils.deleteFilterFromFeedFilterDb(db, currFilter, currFeed, isGlobal);
 
                 filters.remove(info.position);
-                ((FiltersDisplayAdapter)(listView.getAdapter())).udpateData(filters);
+                ((FiltersDisplayAdapter)(listView.getAdapter())).updateData(filters);
                 break;
             case 1:
                 // edit feed

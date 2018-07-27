@@ -14,6 +14,7 @@ import com.java.rssfeed.model.feed.FeedMessage;
 import com.java.rssfeed.ReadTest;
 import com.java.rssfeed.interfaces.IPageParser;
 import com.patech.location.Connectivity;
+import com.patech.utils.AppConstants;
 
 import android.annotation.SuppressLint;
 import android.app.IntentService;
@@ -22,23 +23,29 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
+import android.provider.Telephony;
+import android.telephony.TelephonyManager;
 import android.text.Html;
 
 public class FeedIntentService extends IntentService {
 
 	private Set<FeedMessage> notifiedSet;
+
+	private SharedPreferences sharedPreferences;
+	private static final int NOTIFICATION_ID = 1;
+	private static int NOTIFICATION_COUNTER = 2;
+	private final Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+	private long[] mVibratePattern = { 0, 200, 200, 300 };
+
 	public FeedIntentService() {
 		super(FeedIntentService.class.getName());
 		notifiedSet = new HashSet<>();
 	}
-
-	private static final int NOTIFICATION_ID = 1;
-	private static int NOTIFICATION_COUNTER = 2;
-    private final Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-    private long[] mVibratePattern = { 0, 200, 200, 300 };
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -50,6 +57,7 @@ public class FeedIntentService extends IntentService {
 	public void onCreate2() {
 //		super.onCreate();
 
+		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		final Intent notificationIntent = new Intent(getApplicationContext(),
 				MainActivity.class);
 		final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
@@ -112,6 +120,10 @@ public class FeedIntentService extends IntentService {
 	@SuppressLint("NewApi")
 	public void showNotification(String infoUrl, FeedMessage feedMsg) {
 
+		if (!((FeedReaderApplication)getApplication()).showNofication()){
+			return;
+		}
+
 		if (notifiedSet.contains(feedMsg)) {
 			return;
 		}
@@ -130,39 +142,27 @@ public class FeedIntentService extends IntentService {
 
         // build notification
         // the addAction re-use the same intent to keep the example short
-        Notification.Builder builder   = new Notification.Builder(this)
+        Notification.Builder builder = new Notification.Builder(this)
                 .setContentTitle(title)
                 .setContentText(msg)
                 .setTicker(msg)
                 .setSmallIcon(android.R.drawable.arrow_up_float)
                 .setContentIntent(pIntent)
-                .setAutoCancel(true)
-				.setSound(alarmSound)
-                .setVibrate(mVibratePattern);
+                .setAutoCancel(true);
 
-//        builder.setDefaults(Notification.DEFAULT_SOUND);
-//        builder.setOnlyAlertOnce(true);
-
-
-//                .addAction(android.R.drawable.alert_light_frame, "Call", pIntent)
-//                .addAction(android.R.drawable.sym_action_chat, "More", pIntent)
-//                .addAction(android.R.drawable.sym_action_email, "And more", pIntent);
-
-//		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-		// Adds the back stack for the Intent (but not the Intent itself)
-//		stackBuilder.addParentStack(MainActivity.class);
-//		stackBuilder.addNextIntent(showMessageIntent);
-
-//		PendingIntent resultPendingIntent =
-//		        stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//		mBuilder.setContentIntent(resultPendingIntent);
+		if (!isOnCall()) {
+			builder.setSound(alarmSound).setVibrate(mVibratePattern);
+		}
 
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		// mId allows you to update the notification later on.
 
         mNotificationManager.notify(NOTIFICATION_COUNTER++, builder.build());
 
+	}
+
+	private boolean isOnCall() {
+		return sharedPreferences.getBoolean(AppConstants.ON_CALL, false);
 	}
 
 	@Override

@@ -23,6 +23,8 @@ public class Feed {
 
     // htmlUrl generally points to the original website
     private String htmlUrl;
+
+    // @RuntimeOnly
     private String title;
     private String description;
     private String language;

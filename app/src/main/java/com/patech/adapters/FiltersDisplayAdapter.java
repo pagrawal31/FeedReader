@@ -34,7 +34,7 @@ public class FiltersDisplayAdapter extends ArrayAdapter {
     public int getCount() {
         return filters.size();
     }
-    public void udpateData(List<? extends IFeedFilter> newFilters) {
+    public void updateData(List<? extends IFeedFilter> newFilters) {
         this.filters = newFilters;
         notifyDataSetChanged();
     }

@@ -129,9 +129,10 @@ public class FeedSearchActivity extends AppCompatActivity implements AdapterView
                 Request.Builder builder = new Request.Builder();
                 builder.url(feedUrl);
                 Request request = builder.build();
-
+//                client.newCall(request).
                 Response response = client.newCall(request).execute();
                 String webpage = response.body().string();
+
                 JSONObject jsonObject = new JSONObject(webpage);
 
                 JSONArray array = jsonObject.getJSONArray("results");

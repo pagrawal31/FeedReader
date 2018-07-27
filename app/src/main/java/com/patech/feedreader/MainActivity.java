@@ -58,6 +58,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +84,7 @@ public class MainActivity extends BaseActivity implements
 	 * navigation drawer.
 	 */
 
-	SharedPreferences prefs;
+//	SharedPreferences prefs;
 
 	/**
 	 * Used to store the last screen title. For use in
@@ -103,6 +104,9 @@ public class MainActivity extends BaseActivity implements
     private SharedPreferences sharedPreferences;
     private ActionBarDrawerToggle toggle;
 
+    // flag for doing checks like counting days etc
+    private boolean redoChecks = true;
+
     @BindView(R.id.imageView) ImageView headerImageView;
     @BindView(R.id.nav_items_list) ListView mNavListView;
     @BindView(R.id.fab) FloatingActionButton fab;
@@ -117,18 +121,61 @@ public class MainActivity extends BaseActivity implements
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.app_name);
+        mTitle = getResources().getString(R.string.app_name);
+        getSupportActionBar().setTitle(mTitle);
         sharedPreferences = ((FeedReaderApplication)getApplication()).getSharedPreferences();
-        prefs = getPreferences(MODE_PRIVATE);
 
         initDB();
+        requestPermission(android.Manifest.permission.READ_PHONE_STATE, getString(R.string.permission_rationale_read_phone_state),
+                READ_PHONE_STATE_PERMISSION_REQUEST_CODE);
+
+        int flags = getIntent().getFlags();
+//        if((getIntent().getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY )!=0) {
+//            checkForCleanupMsgs();
+//        }
+        if (flags != 0) {
+            checkForCleanupMsgs();
+        }
         super.initAds(mAdView);
         firstTimeInit();
         initUI();
 	}
 
-	private void displaySelectedScreen(int position) {
+    private void checkForCleanupMsgs() {
+
+        String storedVal = sharedPreferences.getString(AppConstants.CLEANUP_DAYS, "0");
+        int daysVal = 0;
+        try {
+            daysVal = Integer.parseInt(storedVal);
+        } catch (NumberFormatException nfe) {
+            daysVal = 0;
+        }
+
+        if (daysVal <= 0 || daysVal > 31)
+            return;
+
+        String lastSavedDate = sharedPreferences.getString(AppConstants.CLEANUP_DATE, AppConstants.EMPTY);
+
+        if (lastSavedDate.isEmpty()) {
+            lastSavedDate = AppUtils.formatDate(new Date());
+            updateLastSavedDate(lastSavedDate);
+            return;
+        }
+        Date oldDate = AppUtils.parseDate(lastSavedDate);
+        if (AppUtils.dateDiff(oldDate, new Date(), daysVal)) {
+            cleanupAllMsgs();
+            lastSavedDate = AppUtils.formatDate(new Date());
+            updateLastSavedDate(lastSavedDate);
+        }
+    }
+
+    private void updateLastSavedDate(String lastSavedDate) {
+        sharedPreferences.edit().putString(AppConstants.CLEANUP_DATE, lastSavedDate).commit();
+    }
+
+    private void displaySelectedScreen(int position) {
         currPosition = position;
 
         Fragment fragment = NavigationMenuFragment.newInstance(position);
@@ -211,7 +258,7 @@ public class MainActivity extends BaseActivity implements
             startActivity(feedSearchIntent);
             break;
         case R.id.cleanAllFeedMsg:
-            ReadTest.removeAllFeedMsgs();
+            cleanupAllMsgs();
             break;
         }
 		return super.onOptionsItemSelected(item);
@@ -497,6 +544,13 @@ public class MainActivity extends BaseActivity implements
         startActivity(mainIntent);
     }
 
+    /*
+    method to remove all msgs
+     */
+    private void cleanupAllMsgs() {
+        ReadTest.removeAllFeedMsgs();
+    }
+
     private void firstTimeInit() {
 
         // Check if we need to display our OnboardingFragment
@@ -508,12 +562,13 @@ public class MainActivity extends BaseActivity implements
             SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
             sharedPreferencesEditor.putBoolean(AppConstants.FIRST_TIME_LAUNCH, true);
             if (!isMobile) {
-                sharedPreferencesEditor.putBoolean(AppConstants.WIFI_ONLY, true);
+                sharedPreferencesEditor.putBoolean(getResources().getString(R.string.download_over_wifi), true);
+//                sharedPreferencesEditor.putBoolean(AppConstants.WIFI_ONLY, true);
             }
             getApp().setUpdateOnWifiOnly(!isMobile);
             sharedPreferencesEditor.apply();
         } else {
-            boolean isWifiOnly = sharedPreferences.getBoolean(AppConstants.WIFI_ONLY, false);
+            boolean isWifiOnly = sharedPreferences.getBoolean(getResources().getString(R.string.download_over_wifi), false);
             getApp().setUpdateOnWifiOnly(isWifiOnly);
         }
     }
